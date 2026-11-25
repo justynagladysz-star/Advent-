@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Piernikowy Kalendarz</title>
+<style>
+  body { margin:0; min-height:100vh; display:flex; flex-direction:column; align-items:center;
+         justify-content:center; background:#1b2a4a; font-family:Georgia, serif; color:#fff; overflow-x:hidden; }
+  .snow { position:fixed; top:-10px; color:#fff; animation:fall linear infinite; pointer-events:none; }
+  @keyframes fall { to { transform:translateY(110vh); } }
+  .house { position:relative; width:340px; margin-top:120px; }
+  .roof { position:absolute; top:-110px; left:-20px; width:0; height:0;
+          border-left:190px solid transparent; border-right:190px solid transparent;
+          border-bottom:120px solid #8b4a1f; }
+  .roof::after { content:""; position:absolute; left:-170px; top:105px; width:340px; height:14px;
+          background:repeating-linear-gradient(90deg,#fff 0 18px,#f6c 18px 36px); border-radius:7px; }
+  .walls { background:#c87a3c; border:6px solid #fff; border-radius:12px; padding:16px;
+           display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .door { aspect-ratio:3/4; perspective:400px; position:relative; }
+  .inside { position:absolute; inset:0; background:#5a2d0c; border-radius:8px 8px 3px 3px;
+            display:flex; align-items:center; justify-content:center; font-size:22px; }
+  .front { position:absolute; inset:0; background:#e8a25a; border:3px dashed #fff;
+           border-radius:8px 8px 3px 3px; display:flex; align-items:center; justify-content:center;
+           font-weight:bold; font-size:20px; color:#5a2d0c; transform-origin:left;
+           transition:transform 1.2s ease; }
+  .door.glow .front { animation:glow 0.8s ease-in-out 3; }
+  @keyframes glow { 50% { box-shadow:0 0 25px 10px #ffd84d; background:#ffe08a; } }
+  .door.open .front { transform:rotateY(-110deg); }
+  .msg { position:fixed; inset:0; background:rgba(0,0,0,.6); display:none;
+         align-items:center; justify-content:center; padding:20px; }
+  .msg.show { display:flex; }
+  .card { background:#fff8ec; color:#5a2d0c; border:6px solid #c87a3c; border-radius:16px;
+          padding:24px; max-width:320px; text-align:center; font-size:19px; line-height:1.5; }
+  .card h2 { margin-top:0; }
+  .card button { margin-top:16px; padding:8px 20px; border:none; border-radius:20px;
+                 background:#c0392b; color:#fff; font-size:16px; }
+</style>
+</head>
+<body>
+<h1>🎄 Kalendarz Adwentowy 🎄</h1>
+<div class="house">
+  <div class="roof"></div>
+  <div class="walls" id="walls"></div>
+</div>
+<div class="msg" id="msg">
+  <div class="card">
+    <h2 id="title"></h2>
+    <div id="text"></div>
+    <button onclick="document.getElementById('msg').classList.remove('show')">Zamknij</button>
+  </div>
+</div>
+<script>
+  // Tu wpisz swoje wiadomości (1–24)
+  const messages = [];
+  for (let i = 1; i <= 24; i++) messages[i] = "Wiadomość na dzień " + i + " – wkrótce!";
+  messages[1] = "Tu wpisz swoją pierwszą wiadomość 💛";
+
+  const icons = ["🍪","⭐","🎁","❄️","🔔","🕯️"];
+  const walls = document.getElementById("walls");
+  for (let i = 1; i <= 24; i++) {
+    walls.innerHTML += `<div class="door" id="d${i}">
+      <div class="inside">${icons[i % icons.length]}</div>
+      <div class="front">${i}</div></div>`;
+  }
+  for (let i = 0; i < 40; i++) {
+    const s = document.createElement("div");
+    s.className = "snow"; s.textContent = "❄";
+    s.style.left = Math.random()*100 + "vw";
+    s.style.fontSize = (8 + Math.random()*14) + "px";
+    s.style.animationDuration = (5 + Math.random()*8) + "s";
+    s.style.animationDelay = (-Math.random()*10) + "s";
+    document.body.appendChild(s);
+  }
+  const day = parseInt(new URLSearchParams(location.search).get("tag"));
+  if (day >= 1 && day <= 24) {
+    const door = document.getElementById("d" + day);
+    setTimeout(() => door.classList.add("glow"), 500);
+    setTimeout(() => door.classList.add("open"), 3000);
+    setTimeout(() => {
+      document.getElementById("title").textContent = "Dzień " + day;
+      document.getElementById("text").textContent = messages[day];
+      document.getElementById("msg").classList.add("show");
+    }, 4300);
+  }
+</script>
+</body>
+</html>
