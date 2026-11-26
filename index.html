@@ -66,6 +66,12 @@
     0%, 100% { opacity: .55; transform: translate(-50%,-50%) scale(.85) rotate(0deg); }
     50%      { opacity: 1;   transform: translate(-50%,-50%) scale(1.25) rotate(20deg); }
   }
+  /* gemalte Schneeflocken und Sterne glänzen selbst: weicher Schimmer genau auf der Flocke, ohne Stern darüber */
+  .glint { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none;
+    background: radial-gradient(closest-side, rgba(255,255,255,.95), rgba(255,248,230,.55) 35%, rgba(255,235,200,.18) 65%, transparent 100%);
+    mix-blend-mode: screen; animation: glint var(--d, 2.6s) ease-in-out var(--delay, 0s) infinite; }
+  @keyframes glint { 0%, 100% { opacity: .15; transform: translate(-50%,-50%) scale(.85); }
+                     50% { opacity: .9; transform: translate(-50%,-50%) scale(1.1); } }
   #snow { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; }
 
   /* ---------- Leuchtendes Fenster ---------- */
@@ -396,7 +402,13 @@ findImage().then(src => {
     const scale = wrap.clientWidth / L.W;
     L.stars.forEach(([x, y, size]) => {
       const [l, t] = px(x, y);
-      addStar(wrap, l, t, Math.max(8, size * scale * 0.7));
+      const g = document.createElement('div');
+      g.className = 'glint';
+      const d = Math.max(10, size * scale * 1.5);
+      g.style.left = l + '%'; g.style.top = t + '%'; g.style.width = g.style.height = d + 'px';
+      g.style.setProperty('--d', (2 + Math.random() * 2).toFixed(2) + 's');
+      g.style.setProperty('--delay', (-Math.random() * 3).toFixed(2) + 's');
+      wrap.appendChild(g);
     });
     // zusätzliche Sterne oben im Himmel (Handy)
     if (!PC) for (let i = 0; i < 14; i++) {
