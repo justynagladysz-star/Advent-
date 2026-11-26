@@ -114,7 +114,7 @@
     min-height: 100cqw; padding: 29cqw 12.5cqw 33cqw;
   }
   .card .paper-mid {
-    position: absolute; left: 0; right: 0; top: 50cqw; bottom: 25cqw; z-index: -2;
+    position: absolute; left: 0; right: 0; top: 50cqw; bottom: 20cqw; z-index: -2;
     background: url('karte-mitte.png') top center / 100% auto repeat-y;
   }
   .card .paper-top, .card .paper-bottom { position: absolute; left: 0; width: 100%; z-index: -1; display: block; }
@@ -124,13 +124,11 @@
     font-family: 'Cormorant Garamond', serif; font-weight: 500;
     letter-spacing: .3em; font-size: 5.6cqw; margin: 0 0 3cqw; padding-left: .3em;
   }
-  .divider { width: 18cqw; height: 1px; background: #3a2414; margin: 0 auto 6cqw; position: relative; }
-  .divider::after { content: ""; position: absolute; left: 50%; top: -.6cqw; width: 1.3cqw; height: 1.3cqw;
-    background: #3a2414; border-radius: 50%; transform: translateX(-50%); }
+  .divider { display: block; width: 24cqw; margin: 0 auto 5.5cqw; opacity: .95; }
   .text { font-family: 'EB Garamond', Georgia, serif; font-size: 4.6cqw; line-height: 1.28; letter-spacing: .03em; }
   .text p { margin: 0 0 3.4cqw; }
   .text em { font-style: italic; }
-  .text .zh { font-family: 'Noto Serif SC', serif; font-size: 5.4cqw; letter-spacing: .16em; margin: 5cqw 0 0; }
+  .text .zh { font-family: 'Noto Serif SC', serif; font-size: 5.4cqw; letter-spacing: .16em; padding-left: .16em; margin: 5cqw 0 0; }
 </style>
 </head>
 <body>
@@ -159,7 +157,7 @@
       <img class="paper-top" src="karte-oben.png" alt="">
       <img class="paper-bottom" src="karte-unten.png" alt="">
       <h2 id="title">TÜRCHEN NR. 1</h2>
-      <div class="divider"></div>
+      <img class="divider" src="zweig.png" alt="">
       <div class="text" id="text"></div>
     </div>
   </div>
@@ -233,7 +231,7 @@ function addStar(parent, leftPct, topPct, sizePx) {
   parent.appendChild(s);
 }
 
-['karte-oben.png','karte-mitte.png','karte-unten.png'].forEach(u => { const i = new Image(); i.src = u; });
+['karte-oben.png','karte-mitte.png','karte-unten.png','zweig.png'].forEach(u => { const i = new Image(); i.src = u; });
 
 const REPO = 'justynagladysz-star/Advent-';
 async function findImage() {
@@ -321,6 +319,8 @@ function tapDoor(d, btn) {
 function openCard(d) {
   document.getElementById('title').textContent = 'TÜRCHEN NR. ' + d;
   document.getElementById('text').innerHTML = messages[d] || '';
+  // chinesisches Fragezeichen hat rechts Leerraum: durch schmales ersetzen, damit alles mittig steht
+  document.querySelectorAll('#text .zh').forEach(el => el.innerHTML = el.innerHTML.replace(/？/g, '?').replace(/！/g, '!'));
   overlay.classList.add('show');
   overlay.scrollTop = 0;
 }
