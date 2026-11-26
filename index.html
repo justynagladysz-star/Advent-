@@ -88,14 +88,15 @@
 
   /* ---------- Nachricht ---------- */
   .overlay {
-    position: fixed; inset: 0; z-index: 6; display: none; overflow-y: auto;
+    position: fixed; inset: 0; z-index: 6; display: none;
     background:
-      radial-gradient(circle at 50% 30%, rgba(255,220,170,.12), transparent 60%),
-      radial-gradient(circle at 50% 100%, rgba(0,0,0,.25), transparent 60%),
-      #7e4f2b;
-    padding: calc(env(safe-area-inset-top) + 70px) 18px 40px;
+      radial-gradient(circle at 50% 40%, rgba(255,225,180,.14), transparent 65%),
+      radial-gradient(circle at 50% 110%, rgba(60,30,10,.35), transparent 60%),
+      #9c6a42;
+    align-items: center; justify-content: center;
+    padding: calc(env(safe-area-inset-top) + 60px) 14px calc(env(safe-area-inset-bottom) + 20px);
   }
-  .overlay.show { display: block; animation: fade .8s ease; }
+  .overlay.show { display: flex; animation: fade .8s ease; }
   @keyframes fade { from { opacity: 0; } }
   .close {
     position: fixed; top: calc(env(safe-area-inset-top) + 14px); right: 16px; z-index: 5;
@@ -104,36 +105,39 @@
     font-size: 22px; line-height: 1; cursor: pointer;
   }
   .cardwrap {
-    container-type: inline-size; width: 100%; max-width: 420px; margin: 10px auto 0;
-    filter: drop-shadow(0 16px 22px rgba(0,0,0,.45)) drop-shadow(0 2px 4px rgba(0,0,0,.3));
+    container-type: inline-size;
+    width: min(440px, 100%, calc((100dvh - 90px - env(safe-area-inset-top)) * 760 / 1129));
+    filter: drop-shadow(0 14px 18px rgba(50,22,5,.45)) drop-shadow(0 2px 3px rgba(50,22,5,.35));
     animation: pop .9s ease;
   }
   @keyframes pop { from { transform: scale(.88) translateY(24px); opacity: 0; } }
   .card {
-    position: relative; isolation: isolate; text-align: center; color: #2b1a10;
-    min-height: 100cqw; padding: 29cqw 12.5cqw 33cqw;
+    position: relative; aspect-ratio: 760 / 1129;
+    background: url('karte-lebkuchen.webp') center / 100% 100% no-repeat;
   }
-  .card .paper-mid {
-    position: absolute; left: 0; right: 0; top: 50cqw; bottom: 20cqw; z-index: -2;
-    background: url('karte-mitte.png') top center / 100% auto repeat-y;
+  .card .inner {
+    --k: 1;
+    position: absolute; left: 13%; right: 13%; top: 18.5%; bottom: 17%;
+    display: flex; flex-direction: column; justify-content: center;
+    text-align: center; color: #fdf6ec; overflow: hidden;
+    text-shadow: 0 .25cqw .1cqw rgba(70,35,10,.55), 0 0 .6cqw rgba(255,245,230,.15);
   }
-  .card .paper-top, .card .paper-bottom { position: absolute; left: 0; width: 100%; z-index: -1; display: block; }
-  .card .paper-top { top: 0; }
-  .card .paper-bottom { bottom: 0; }
   .card h2 {
-    font-family: 'Zuckerguss', cursive; font-weight: 700; font-size: 9.5cqw; line-height: 1.1;
-    margin: 0 0 2.5cqw; color: #6b3b19;
-    text-shadow: 0 .22cqw 0 rgba(255,250,240,.6), 0 -.05cqw .1cqw rgba(60,30,10,.25);
+    font-family: 'Zuckerguss', cursive; font-weight: 700; font-size: calc(9cqw * var(--k)); line-height: 1.1;
+    margin: 0 0 calc(2cqw * var(--k)); color: #fffaf3;
+    text-shadow: 0 -.1cqw 0 #fff, 0 .3cqw 0 #e9dccb, 0 .55cqw .3cqw rgba(70,35,10,.5);
   }
-  .divider { display: flex; align-items: center; justify-content: center; gap: 2.4cqw; margin: 0 auto 5.5cqw; }
+  .divider { display: flex; align-items: center; justify-content: center; gap: 2.4cqw;
+    margin: 0 auto calc(4.5cqw * var(--k)); }
   .divider span { width: 1.1cqw; height: 1.1cqw; border-radius: 50%;
-    background: radial-gradient(circle at 45% 40%, #5e3214 0%, #6b3b19 55%, #8a5a33 100%);
-    box-shadow: 0 .18cqw 0 rgba(255,250,240,.55), 0 -.08cqw .1cqw rgba(60,30,10,.25) inset; }
+    background: radial-gradient(circle at 40% 35%, #ffffff, #f4ece2 60%, #d9c7b2);
+    box-shadow: 0 .2cqw .2cqw rgba(70,35,10,.45); }
   .divider span:nth-child(2) { width: 1.9cqw; height: 1.9cqw; }
-  .text { font-family: 'EB Garamond', Georgia, serif; font-size: 4.6cqw; line-height: 1.28; letter-spacing: .03em; }
-  .text p { margin: 0 0 3.4cqw; }
+  .text { font-family: 'EB Garamond', Georgia, serif; font-weight: 500; font-size: calc(4.6cqw * var(--k)); line-height: 1.27; letter-spacing: .03em; }
+  .text p { margin: 0 0 calc(3cqw * var(--k)); }
+  .text p:last-child { margin-bottom: 0; }
   .text em { font-style: italic; }
-  .text .zh { font-family: 'Noto Serif SC', serif; font-size: 5.4cqw; letter-spacing: .16em; padding-left: .16em; margin: 5cqw 0 0; }
+  .text .zh { font-family: 'Noto Serif SC', serif; font-size: calc(5.4cqw * var(--k)); letter-spacing: .16em; padding-left: .16em; margin: calc(4cqw * var(--k)) 0 0; }
 </style>
 </head>
 <body>
@@ -158,12 +162,11 @@
   <button class="close" id="close" aria-label="Schließen">✕</button>
   <div class="cardwrap">
     <div class="card">
-      <div class="paper-mid"></div>
-      <img class="paper-top" src="karte-oben.png" alt="">
-      <img class="paper-bottom" src="karte-unten.png" alt="">
-      <h2 id="title">Türchen Nr. 1</h2>
-      <div class="divider"><span></span><span></span><span></span></div>
-      <div class="text" id="text"></div>
+      <div class="inner" id="inner">
+        <h2 id="title">Türchen Nr. 1</h2>
+        <div class="divider"><span></span><span></span><span></span></div>
+        <div class="text" id="text"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -236,7 +239,7 @@ function addStar(parent, leftPct, topPct, sizePx) {
   parent.appendChild(s);
 }
 
-['karte-oben.png','karte-mitte.png','karte-unten.png'].forEach(u => { const i = new Image(); i.src = u; });
+['karte-lebkuchen.webp'].forEach(u => { const i = new Image(); i.src = u; });
 
 const REPO = 'justynagladysz-star/Advent-';
 async function findImage() {
@@ -327,9 +330,22 @@ function openCard(d) {
   // chinesisches Fragezeichen hat rechts Leerraum: durch schmales ersetzen, damit alles mittig steht
   document.querySelectorAll('#text .zh').forEach(el => el.innerHTML = el.innerHTML.replace(/？/g, '?').replace(/！/g, '!'));
   overlay.classList.add('show');
+  fitText();
   overlay.scrollTop = 0;
 }
 document.getElementById('close').onclick = () => overlay.classList.remove('show');
+
+/* Längere Nachrichten werden automatisch etwas kleiner geschrieben, damit sie auf die Karte passen */
+function fitText() {
+  const inner = document.getElementById('inner');
+  let k = 1;
+  inner.style.setProperty('--k', k);
+  while (inner.scrollHeight > inner.clientHeight + 1 && k > 0.5) {
+    k -= 0.03; inner.style.setProperty('--k', k);
+  }
+}
+addEventListener('resize', () => { if (overlay.classList.contains('show')) fitText(); });
+if (document.fonts) document.fonts.ready.then(() => { if (overlay.classList.contains('show')) fitText(); });
 
 /* ---------- Bild an den Bildschirm anpassen ---------- */
 function placeScene() {
