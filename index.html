@@ -154,18 +154,6 @@
     80%  { transform: translate(-50%, calc(-50% - var(--h) * .25)); }
     100% { transform: translate(-50%, -50%); }
   }
-  /* geschlossene Fensterläden für Tage, die noch nicht dran sind */
-  .shut { position: absolute; transform: translate(-50%, -50%); pointer-events: none; z-index: 2;
-    display: flex; perspective: 300px; filter: drop-shadow(0 1px 1.5px rgba(60,25,5,.45)); }
-  .shut > div:not(.plaque) { width: 50%; height: 100%; transition: transform .9s cubic-bezier(.5,0,.3,1), opacity .9s; }
-  .shut > div:first-child { transform-origin: 0 50%; }
-  .shut > div:nth-child(2) { transform-origin: 100% 50%; }
-  .shut svg { display: block; width: 100%; height: 100%; overflow: visible; }
-  .shut .plaque { position: absolute; left: 50%; top: 57%; width: 64%; aspect-ratio: 1; transform: translate(-50%, -50%);
-    transition: opacity .35s, transform .5s; }
-  .shut.open .plaque { opacity: 0; transform: translate(-50%, -50%) scale(.6); }
-  .shut.open > div:first-child { transform: rotateY(-105deg); opacity: 0; }
-  .shut.open > div:nth-child(2) { transform: rotateY(105deg); opacity: 0; }
   .hint { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 28px);
     transform: translateX(-50%) translateY(20px); opacity: 0; transition: all .4s ease;
     background: #f2e3cb; color: #3a2414; font-family: 'EB Garamond', Georgia, serif; font-size: 18px;
@@ -330,7 +318,6 @@ if (PC) document.body.classList.add('pc');
 const LAYOUTS = {
   handy: {
     img: 'haus-voll.jpg', W: 1199, H: 2702, OFF: 790,
-    shut: [84, 90, -3],
     win: [11, 9.5 * 1312 / 2702], win24: [16, 13 * 1312 / 2702],
     glow: [12, 10 * 1312 / 2702], glow24: [18, 14 * 1312 / 2702],
     snowman: [1098, 1080, 165, 250], mouth: [1075, 1040], tree: [92, 1010, 185, 390], treeTop: [95, 900], lamps: [[445, 1095, 70, 110], [754, 1083, 70, 110]], chimney: [875, 150, 170, 210], smoke: [878, 45], heart: { c: [598, 206], s: [108, 100], hs: [116, 108], img: 'handy' }, fences: [{"slats": [[107.5, 1167.5, 23], [157.5, 1167.5, 29], [200.5, 1167.5, 29], [243.5, 1167.5, 31]], "patch": [177.5, 1167.5, 171]}, {"slats": [[923.5, 1168.0, 31], [966.5, 1168.0, 31], [1003.5, 1168.0, 31]], "patch": [963.5, 1168.0, 119]}], drift: [[5, 35], [1.3, 2.1]],
@@ -350,7 +337,6 @@ const LAYOUTS = {
   },
   pc: {
     img: 'haus-pc.jpg', W: 1672, H: 941, OFF: 0,
-    shut: [60, 62, -2],
     win: [6.3, 10.1], win24: [9, 20], glow: [7, 11], glow24: [10.5, 21],
     snowman: [1232, 765, 150, 225], mouth: [1212, 720], tree: [410, 715, 180, 300], treeTop: [440, 600], lamps: [[717, 779, 70, 95], [958, 774, 70, 95]], chimney: [1045, 135, 135, 195], smoke: [1045, 55], heart: { c: [834.5, 149], s: [81, 76], hs: [89, 84], img: 'pc' }, fences: [{"slats": [[447.5, 835.5, 29], [487.5, 835.5, 29], [522.5, 835.5, 29], [560.5, 835.5, 29]], "patch": [504.0, 835.5, 150]}, {"slats": [[1075.5, 832.5, 29], [1113.5, 832.5, 31], [1151.5, 832.5, 31]], "patch": [1114.0, 832.5, 114]}], drift: [[90, 170], [0.2, 0.45]],
     windows: {
@@ -418,43 +404,6 @@ findImage().then(src => {
       if (y > 9 && y < 22) y = Math.random() < .5 ? 3 + Math.random() * 6 : 22 + Math.random() * 6;
       addStar(wrap, 4 + Math.random() * 92, y, 6 + Math.random() * 12);
     }
-
-    // Noch nicht erlaubte Türchen bekommen geschlossene Fensterläden
-    const SHUT = n => {
-      const half = (x0, side) => '<svg viewBox="' + x0 + ' 0 50 104" preserveAspectRatio="none">' +
-        '<defs><linearGradient id="sg' + n + side + '" x1="0" y1="0" x2="0" y2="1">' +
-          '<stop offset="0" stop-color="#c78345"/><stop offset="1" stop-color="#a9662f"/></linearGradient>' +
-        '<filter id="sn' + n + side + '" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="' + n + '"/>' +
-          '<feColorMatrix values="0 0 0 0 .35  0 0 0 0 .18  0 0 0 0 .05  0 0 0 .3 0"/><feComposite in2="SourceGraphic" operator="in"/></filter>' +
-        '<filter id="si' + n + side + '" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation=".35"/>' +
-          '<feDropShadow dx="0" dy=".8" stdDeviation=".5" flood-color="#5a2d0f" flood-opacity=".45"/></filter></defs>' +
-        '<path d="M0 104 V50 A50 50 0 0 1 100 50 V104 Z" fill="url(#sg' + n + side + ')"/>' +
-        '<path d="M0 104 V50 A50 50 0 0 1 100 50 V104 Z" fill="#fff" filter="url(#sn' + n + side + ')"/>' +
-        '<g fill="none" stroke="#f3ebe1" stroke-linecap="round" stroke-width="4.2" filter="url(#si' + n + side + ')">' +
-          '<path d="M8 99 V52 A42 42 0 0 1 92 52 V99 Z"/>' +
-          '<path d="M50 10 V36 M50 84 V99" stroke-width="3.2"/></g>' +
-        '<g fill="#f3ebe1" filter="url(#si' + n + side + ')"><circle cx="22" cy="90" r="2.2"/><circle cx="78" cy="90" r="2.2"/>' +
-          '<circle cx="22" cy="40" r="1.8"/><circle cx="78" cy="40" r="1.8"/></g>' +
-        '</svg>';
-      const plaque = '<div class="plaque"><svg viewBox="0 0 60 60"><defs><filter id="pi' + n + '" x="-20%" y="-20%" width="140%" height="140%">' +
-          '<feGaussianBlur stdDeviation=".4"/><feDropShadow dx="0" dy="1" stdDeviation=".7" flood-color="#5a2d0f" flood-opacity=".5"/></filter></defs>' +
-        '<circle cx="30" cy="30" r="26" fill="#bb7a40" stroke="#f3ebe1" stroke-width="3.6" filter="url(#pi' + n + ')"/>' +
-        '<text x="30" y="42.5" text-anchor="middle" font-family="EB Garamond, Georgia, serif" font-size="36" font-weight="500" ' +
-          'fill="#f6efe6" filter="url(#pi' + n + ')" style="font-variant-numeric:lining-nums">' + n + '</text></svg></div>';
-      return '<div>' + half(0, 'l') + '</div><div>' + half(50, 'r') + '</div>' + plaque;
-    };
-    const shutters = {};
-    Object.keys(windows).forEach(k => {
-      const d = +k;
-      if (d === 24 || d <= unlockedUpTo()) return;
-      const [x, y] = windows[d], [l, t] = px(x, y + L.shut[2]);
-      const e = document.createElement('div');
-      e.className = 'shut'; e.innerHTML = SHUT(d);
-      e.style.left = l + '%'; e.style.top = t + '%';
-      e.style.width = (L.shut[0] / L.W * 100) + '%'; e.style.height = (L.shut[1] / L.H * 100) + '%';
-      wrap.appendChild(e); shutters[d] = e;
-    });
-    window.__shutters = shutters;
 
     // Fenster zum Antippen
     Object.keys(windows).forEach(k => {
@@ -648,8 +597,6 @@ function openDoor(d) {
   if (busy) return;
   busy = true;
   const [l, t] = px(...windows[d]), sz = d === 24 ? L.glow24 : L.glow;
-  const sh = window.__shutters && window.__shutters[d];
-  if (sh) sh.classList.add('open');
   glow.classList.remove('on'); void glow.offsetWidth;
   glow.style.left = l + '%';
   glow.style.top = t + '%';
