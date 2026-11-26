@@ -203,9 +203,18 @@
   .zu > i:last-child  { background-position: 100% 0; transform-origin: 100% 50%; }
   .zu.open > i:first-child { transform: rotateY(-115deg); opacity: 0; }
   .zu.open > i:last-child  { transform: rotateY(115deg); opacity: 0; }
-  .zu.shake { animation: zushake .45s ease; }
-  @keyframes zushake { 0%,100% { margin-left: 0; } 20% { margin-left: -.4%; } 40% { margin-left: .4%; }
-    60% { margin-left: -.25%; } 80% { margin-left: .25%; } }
+  .zu.shake { animation: zushake .6s ease-in-out; transform-origin: 50% 90%; }
+  @keyframes zushake {
+    0%, 100% { transform: translateX(0) rotate(0); }
+    12% { transform: translateX(-6%) rotate(-4deg); }  28% { transform: translateX(5%) rotate(3.5deg); }
+    44% { transform: translateX(-4%) rotate(-2.5deg); } 60% { transform: translateX(3%) rotate(1.8deg); }
+    76% { transform: translateX(-1.5%) rotate(-.8deg); } }
+  .wnum.shake { animation: numshake .6s ease-in-out; }
+  @keyframes numshake {
+    0%, 100% { transform: translate(-50%,-50%); }
+    12% { transform: translate(-62%,-50%) rotate(-4deg); }  28% { transform: translate(-40%,-50%) rotate(3.5deg); }
+    44% { transform: translate(-58%,-50%) rotate(-2.5deg); } 60% { transform: translate(-44%,-50%) rotate(1.8deg); }
+    76% { transform: translate(-53%,-50%) rotate(-.8deg); } }
   .hint { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 28px);
     transform: translateX(-50%) translateY(20px); opacity: 0; transition: all .4s ease;
     background: #f2e3cb; color: #3a2414; font-family: 'EB Garamond', Georgia, serif; font-size: 18px;
@@ -430,7 +439,7 @@ function addStar(parent, leftPct, topPct, sizePx) {
 ['karte-lebkuchen.webp','schnee.jpg', (PC ? 'pc' : 'handy') + '-herz.png', (PC ? 'pc' : 'handy') + '-herz-loch.png'].forEach(u => { const i = new Image(); i.src = u; });
 
 const REPO = 'justynagladysz-star/Advent-';
-const V = '?v=33';   // neue Nummer = Browser lädt die Bilder frisch
+const V = '?v=34';   // neue Nummer = Browser lädt die Bilder frisch
 async function findImage() {
   return L.img + V;
 }
@@ -487,7 +496,7 @@ findImage().then(src => {
 
     // Nummern auf die Fenster schreiben
     Object.entries(L.nums.pos).forEach(([d, [x, y]]) => {
-      const n = document.createElement('div'); n.className = 'wnum'; n.textContent = d;
+      const n = document.createElement('div'); n.className = 'wnum'; n.textContent = d; n.dataset.d = d;
       const [l, t] = px(x, y);
       n.style.left = l + '%'; n.style.top = t + '%';
       n.style.fontSize = ((+d === 24 ? L.nums.h24 : L.nums.h) * 0.62 / 0.68 / L.W * 100) + 'cqw';
@@ -771,8 +780,8 @@ function openDoor(d) {
 let hintTimer;
 function tapDoor(d, btn) {
   if (d <= unlockedUpTo()) { openDoor(d); return; }
-  const z = closedWin[d] || btn;
-  z.classList.remove('shake'); void z.offsetWidth; z.classList.add('shake');
+  const z = closedWin[d] || btn, nm = document.querySelector('.wnum[data-d="' + d + '"]');
+  [z, nm].forEach(e => { if (!e) return; e.classList.remove('shake'); void e.offsetWidth; e.classList.add('shake'); });
   const hint = document.getElementById('hint');
   hint.textContent = 'Psst … noch nicht! Dieses Türchen öffnet sich am ' + d + '. Dezember.';
   hint.classList.add('show');
