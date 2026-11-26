@@ -100,6 +100,10 @@
     background: #f6eee4; border-right: 2.5px solid #fffaf3; border-bottom: 2.5px solid #fffaf3;
     clip-path: polygon(0 0, 100% 0, 100% 100%); }
   .bubble.show { opacity: 1; transform: translate(-100%, -100%) scale(1); }
+  .bubble.right { transform: translate(0, -100%) scale(.4); transform-origin: 0 100%; border-radius: 1.2em 1.2em 1.2em .25em; }
+  .bubble.right.show { transform: translate(0, -100%) scale(1); }
+  .bubble.right::after { right: auto; left: -2px; border-right: 0; border-left: 2.5px solid #fffaf3;
+    clip-path: polygon(0 0, 100% 0, 0 100%); }
   .hint { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 28px);
     transform: translateX(-50%) translateY(20px); opacity: 0; transition: all .4s ease;
     background: #f2e3cb; color: #3a2414; font-family: 'EB Garamond', Georgia, serif; font-size: 18px;
@@ -266,7 +270,7 @@ const LAYOUTS = {
     img: 'haus-voll.jpg', W: 1199, H: 2702, OFF: 790,
     win: [11, 9.5 * 1312 / 2702], win24: [16, 13 * 1312 / 2702],
     glow: [12, 10 * 1312 / 2702], glow24: [18, 14 * 1312 / 2702],
-    snowman: [1098, 1080, 165, 250], mouth: [1075, 1040],
+    snowman: [1098, 1080, 165, 250], mouth: [1075, 1040], tree: [92, 1010, 185, 390], treeTop: [95, 900],
     windows: {
       1:[365,370], 2:[518,370], 3:[683,370], 4:[835,370],
       5:[288,515], 6:[447,515], 7:[602,515], 8:[762,515], 9:[916,515],
@@ -284,7 +288,7 @@ const LAYOUTS = {
   pc: {
     img: 'haus-pc.jpg', W: 1672, H: 941, OFF: 0,
     win: [6.3, 10.1], win24: [9, 20], glow: [7, 11], glow24: [10.5, 21],
-    snowman: [1232, 765, 150, 225], mouth: [1212, 720],
+    snowman: [1232, 765, 150, 225], mouth: [1212, 720], tree: [410, 715, 180, 300], treeTop: [440, 600],
     windows: {
       1:[665,268], 2:[778,268], 3:[893,268], 4:[1005,268],
       5:[610,372], 6:[722,372], 7:[836,372], 8:[950,372], 9:[1063,372],
@@ -365,22 +369,29 @@ findImage().then(src => {
       wrap.appendChild(b);
     });
 
-    // Schneemann zum Antippen
-    const [sx, sy, sw, shh] = L.snowman, [sl, st] = px(sx, sy);
-    const sm = document.createElement('button');
-    sm.className = 'snowman'; sm.setAttribute('aria-label', 'Schneemann');
-    sm.style.left = sl + '%'; sm.style.top = st + '%';
-    sm.style.width = (sw / L.W * 100) + '%'; sm.style.height = (shh / L.H * 100) + '%';
-    const bubble = document.createElement('div');
-    bubble.className = 'bubble'; bubble.innerHTML = 'Ich spür’ meine Beine nicht.<br>Ich kann meine Beine nicht spüren!!';
-    const [bl, bt] = px(L.mouth[0] - 18, L.mouth[1] - 30);
-    bubble.style.left = bl + '%'; bubble.style.top = bt + '%';
-    wrap.appendChild(bubble); wrap.appendChild(sm);
-    let bubbleTimer;
-    sm.onclick = () => {
-      bubble.classList.remove('show'); void bubble.offsetWidth; bubble.classList.add('show');
-      clearTimeout(bubbleTimer); bubbleTimer = setTimeout(() => bubble.classList.remove('show'), 4200);
-    };
+    // Schneemann und Tanne zum Antippen: sie sagen etwas
+    function talker(label, box, anchor, html, side) {
+      const [cx, cy, w, h] = box, [l, t] = px(cx, cy);
+      const btn = document.createElement('button');
+      btn.className = 'snowman'; btn.setAttribute('aria-label', label);
+      btn.style.left = l + '%'; btn.style.top = t + '%';
+      btn.style.width = (w / L.W * 100) + '%'; btn.style.height = (h / L.H * 100) + '%';
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble' + (side === 'right' ? ' right' : ''); bubble.innerHTML = html;
+      const [bl, bt] = px(...anchor);
+      bubble.style.left = bl + '%'; bubble.style.top = bt + '%';
+      wrap.appendChild(bubble); wrap.appendChild(btn);
+      let timer;
+      btn.onclick = () => {
+        document.querySelectorAll('.bubble.show').forEach(o => o !== bubble && o.classList.remove('show'));
+        bubble.classList.remove('show'); void bubble.offsetWidth; bubble.classList.add('show');
+        clearTimeout(timer); timer = setTimeout(() => bubble.classList.remove('show'), 4200);
+      };
+    }
+    talker('Schneemann', L.snowman, [L.mouth[0] - 18, L.mouth[1] - 30],
+      'Ich spür’ meine Beine nicht.<br>Ich kann meine Beine nicht spüren!!', 'left');
+    talker('Tanne', L.tree, L.treeTop,
+      'Und wer ist der funky aussehende<br>Esel da drüben?', 'right');
 
     // Sticker gescannt: dieses Türchen öffnet sich sofort
     if (windows[day]) setTimeout(() => openDoor(day), 1000);   // erst 1 Sekunde das Haus zeigen
