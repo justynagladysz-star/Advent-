@@ -24,13 +24,12 @@
   }
   @media (min-aspect-ratio: 3/5) { .scene { width: calc(100dvh * 1199 / 2702); } }
   .scene > img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-  .backdrop { display: none; position: absolute; top: 0; height: 100%; left: -250%; width: 600%;
-    background: url('hintergrund.jpg') 0 0 / 100% 100% no-repeat; }
-  @media (min-aspect-ratio: 3/5) {
-    .backdrop { display: block; }
-    #house { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%);
-             mask-image: linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%); }
-  }
+  body.pc .scene { width: max(100vw, calc(100dvh * 1672 / 941)); aspect-ratio: 1672 / 941; }
+  body.pc .title { left: 2.5%; right: auto; top: 6%; width: 27%; }
+  body.pc .title h1 { font-size: 4.4cqw; -webkit-text-stroke: .07cqw rgba(255,255,255,.55);
+    text-shadow: 0 -.05cqw 0 #fff, 0 .08cqw 0 #f1e6d8, 0 .15cqw 0 #e2d0bb, 0 .22cqw .03cqw #c9aa88,
+      0 .35cqw .5cqw rgba(70,35,10,.55), 0 0 1cqw rgba(255,240,215,.35); }
+  body.pc .title .sprig { width: 13cqw; margin-top: 1cqw; }
   .title {
     position: absolute; left: 0; right: 0; top: 11.5%; z-index: 2;
     display: flex; flex-direction: column; align-items: center;
@@ -172,7 +171,6 @@
 <div class="loading" id="loading">ADVENTSKALENDER</div>
 
 <div class="scene" id="scene" style="visibility:hidden">
-  <div class="backdrop"></div>
   <img id="house" alt="Lebkuchenhaus">
   <div class="title" id="top">
     <h1>Adventskalender</h1>
@@ -245,22 +243,50 @@ const messages = {
 };
 
 /* Positionen auf dem Bild (Bildgröße 1199 x 1312) */
-const IMG_W = 1199, IMG_H = 2702, OFF = 790;   // Haus beginnt 790px unter dem oberen Bildrand
-const HS = 1312 / 2702;                          // Höhen-Umrechnung
-const windows = {
-  1:[365,370], 2:[518,370], 3:[683,370], 4:[835,370],
-  5:[288,515], 6:[447,515], 7:[602,515], 8:[762,515], 9:[916,515],
-  10:[282,660], 11:[443,660], 12:[603,660], 13:[763,660], 14:[920,660],
-  15:[278,808], 16:[443,808], 17:[607,808], 18:[767,808], 19:[921,808],
-  20:[273,958], 21:[431,958], 22:[785,958], 23:[943,958],
-  24:[610,1055]
+/* Zwei Ansichten: Handy (hochkant) und PC (quer). Positionen in Bildpixeln. */
+const PC = innerWidth / innerHeight > 1.05;
+if (PC) document.body.classList.add('pc');
+const LAYOUTS = {
+  handy: {
+    img: 'haus-voll.jpg', W: 1199, H: 2702, OFF: 790,
+    win: [11, 9.5 * 1312 / 2702], win24: [16, 13 * 1312 / 2702],
+    glow: [12, 10 * 1312 / 2702], glow24: [18, 14 * 1312 / 2702],
+    windows: {
+      1:[365,370], 2:[518,370], 3:[683,370], 4:[835,370],
+      5:[288,515], 6:[447,515], 7:[602,515], 8:[762,515], 9:[916,515],
+      10:[282,660], 11:[443,660], 12:[603,660], 13:[763,660], 14:[920,660],
+      15:[278,808], 16:[443,808], 17:[607,808], 18:[767,808], 19:[921,808],
+      20:[273,958], 21:[431,958], 22:[785,958], 23:[943,958],
+      24:[610,1055]
+    },
+    stars: [
+      [90,72,46], [307,100,40], [237,176,26], [82,322,46], [1068,72,34],
+      [1125,175,50], [1042,268,26], [78,705,30], [1135,695,26],
+      [1145,808,44], [195,1055,26], [598,298,22], [513,744,18], [828,1012,20]
+    ]
+  },
+  pc: {
+    img: 'haus-pc.jpg', W: 1672, H: 941, OFF: 0,
+    win: [6.3, 10.1], win24: [9, 20], glow: [7, 11], glow24: [10.5, 21],
+    windows: {
+      1:[665,268], 2:[778,268], 3:[893,268], 4:[1005,268],
+      5:[610,372], 6:[722,372], 7:[836,372], 8:[950,372], 9:[1063,372],
+      10:[605,475], 11:[720,475], 12:[836,475], 13:[950,475], 14:[1065,475],
+      15:[605,577], 16:[720,577], 17:[836,577], 18:[952,577], 19:[1068,577],
+      20:[602,680], 21:[713,680], 22:[966,680], 23:[1080,680],
+      24:[838,765]
+    },
+    stars: [[1242,30,25],[797,29,15],[1573,67,32],[607,86,52],[1382,106,71],[1173,85,21],[521,120,25],
+      [1188,189,35],[1339,248,21],[1571,263,21],[310,294,21],[1509,327,72],[205,351,67],[332,395,19],
+      [1319,433,21],[66,451,30],[1598,477,26],[281,483,19],[1381,546,28],[211,575,33],[1409,680,27],
+      [152,697,12],[1576,767,17],[298,774,16]]
+  }
 };
-/* Sterne und Schneeflocken, die im Bild schon gemalt sind */
-const imageStars = [
-  [90,72,46], [307,100,40], [237,176,26], [82,322,46], [1068,72,34],
-  [1125,175,50], [1042,268,26], [78,705,30], [1135,695,26],
-  [1145,808,44], [195,1055,26], [598,298,22], [513,744,18], [828,1012,20]
-];
+const L = PC ? LAYOUTS.pc : LAYOUTS.handy;
+const windows = L.windows;
+const px = (x, y) => [x / L.W * 100, (y + L.OFF) / L.H * 100];
+// Wechselt jemand zwischen hochkant und quer, Seite neu laden
+addEventListener('resize', () => { if ((innerWidth / innerHeight > 1.05) !== PC) location.reload(); });
 
 const STAR = `<svg viewBox="0 0 40 40"><path d="M20 0 C21 14 26 19 40 20 C26 21 21 26 20 40 C19 26 14 21 0 20 C14 19 19 14 20 0 Z" fill="#fffaf0"/></svg>`;
 
@@ -280,7 +306,7 @@ function addStar(parent, leftPct, topPct, sizePx) {
 
 const REPO = 'justynagladysz-star/Advent-';
 async function findImage() {
-  return 'haus-voll.jpg';
+  return L.img;
 }
 
 const day = parseInt(new URLSearchParams(location.search).get('tag'), 10);
@@ -296,19 +322,13 @@ findImage().then(src => {
     document.getElementById('scene').style.visibility = 'visible';
 
     // Sterne auf dem Bild funkeln lassen
-    const scale = wrap.clientWidth / IMG_W;
-    imageStars.forEach(([x, y, size]) =>
-      addStar(wrap, x / IMG_W * 100, (y + OFF) / IMG_H * 100, Math.max(8, size * scale * 0.7)));
-    // zusätzliche Sterne oben im Himmel
-    // Sterne auch links und rechts vom Haus, wenn der Bildschirm breit ist (PC)
-    if (innerWidth > document.getElementById('scene').offsetWidth * 1.2) {
-      for (let i = 0; i < 46; i++) {
-        let x = -245 + Math.random() * 590;
-        if (x > -8 && x < 108) x += x < 50 ? -120 : 120;
-        addStar(wrap, x, 2 + Math.random() * 52, 5 + Math.random() * 12);
-      }
-    }
-    for (let i = 0; i < 14; i++) {
+    const scale = wrap.clientWidth / L.W;
+    L.stars.forEach(([x, y, size]) => {
+      const [l, t] = px(x, y);
+      addStar(wrap, l, t, Math.max(8, size * scale * 0.7));
+    });
+    // zusätzliche Sterne oben im Himmel (Handy)
+    if (!PC) for (let i = 0; i < 14; i++) {
       let y = 2 + Math.random() * 26;
       if (y > 9 && y < 22) y = Math.random() < .5 ? 3 + Math.random() * 6 : 22 + Math.random() * 6;
       addStar(wrap, 4 + Math.random() * 92, y, 6 + Math.random() * 12);
@@ -316,14 +336,14 @@ findImage().then(src => {
 
     // Fenster zum Antippen
     Object.keys(windows).forEach(k => {
-      const d = +k, [x, y] = windows[d], big = d === 24;
+      const d = +k, [l, t] = px(...windows[d]), sz = d === 24 ? L.win24 : L.win;
       const b = document.createElement('button');
       b.className = 'hit' + (d <= unlockedUpTo() ? '' : ' locked');
       b.setAttribute('aria-label', 'Türchen ' + d);
-      b.style.left = (x / IMG_W * 100) + '%';
-      b.style.top = ((y + OFF) / IMG_H * 100) + '%';
-      b.style.width = (big ? 16 : 11) + '%';
-      b.style.height = ((big ? 13 : 9.5) * HS) + '%';
+      b.style.left = l + '%';
+      b.style.top = t + '%';
+      b.style.width = sz[0] + '%';
+      b.style.height = sz[1] + '%';
       b.onclick = () => tapDoor(d, b);
       wrap.appendChild(b);
     });
@@ -347,12 +367,12 @@ let busy = false;
 function openDoor(d) {
   if (busy) return;
   busy = true;
-  const [x, y] = windows[d], big = d === 24;
+  const [l, t] = px(...windows[d]), sz = d === 24 ? L.glow24 : L.glow;
   glow.classList.remove('on'); void glow.offsetWidth;
-  glow.style.left = (x / IMG_W * 100) + '%';
-  glow.style.top = ((y + OFF) / IMG_H * 100) + '%';
-  glow.style.width = (big ? 18 : 12) + '%';
-  glow.style.height = ((big ? 14 : 10) * HS) + '%';
+  glow.style.left = l + '%';
+  glow.style.top = t + '%';
+  glow.style.width = sz[0] + '%';
+  glow.style.height = sz[1] + '%';
   setTimeout(() => glow.classList.add('on'), 300);
   setTimeout(() => { openCard(d); busy = false; }, 2800);
 }
@@ -427,7 +447,14 @@ if (document.fonts) document.fonts.ready.then(() => { if (overlay.classList.cont
 function placeScene() {
   const sc = document.getElementById('scene');
   const extra = sc.offsetHeight - innerHeight;          // so viel ist zu hoch
-  sc.style.top = (extra > 0 ? -extra * 0.3 : -extra / 2) + 'px';
+  sc.style.top = (extra > 0 ? -extra * (PC ? 0.25 : 0.3) : -extra / 2) + 'px';
+  // PC: Titel immer sichtbar links oben, auch wenn das Bild seitlich etwas abgeschnitten ist
+  if (PC) {
+    const cut = Math.max(0, (sc.offsetWidth - innerWidth) / 2);
+    const t = document.getElementById('top');
+    t.style.left = (cut + innerWidth * 0.02) + 'px';
+    t.style.top = (Math.max(0, extra * 0.25) + innerHeight * 0.05) + 'px';
+  }
 }
 addEventListener('resize', placeScene);
 placeScene();
