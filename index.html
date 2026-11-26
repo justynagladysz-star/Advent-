@@ -216,6 +216,9 @@
     55% { transform: rotateY(-9deg); } 75% { transform: rotateY(2deg); } }
   @keyframes rattleR { 0%,100% { transform: rotateY(0); } 15% { transform: rotateY(14deg); } 35% { transform: rotateY(-3deg); }
     55% { transform: rotateY(9deg); } 75% { transform: rotateY(-2deg); } }
+  /* die 24 auf der Tür: klar und gut lesbar, ohne Weichzeichner */
+  .wnum.big { filter: none; opacity: 1; color: #f6e9dc;
+    text-shadow: 0 .03em .02em rgba(214,186,160,.9), 0 .06em .06em rgba(70,35,10,.5); }
   .wnum.shake { animation: numshake .6s ease-in-out; }
   @keyframes numshake {
     0%, 100% { transform: translate(-50%,-50%); } 15% { transform: translate(-50%,-50%) rotate(-5deg); }
@@ -446,7 +449,7 @@ function addStar(parent, leftPct, topPct, sizePx, dot) {
 ['karte-lebkuchen.webp','schnee.jpg', (PC ? 'pc' : 'handy') + '-herz.png', (PC ? 'pc' : 'handy') + '-herz-loch.png'].forEach(u => { const i = new Image(); i.src = u; });
 
 const REPO = 'justynagladysz-star/Advent-';
-const V = '?v=44';   // neue Nummer = Browser lädt die Bilder frisch
+const V = '?v=45';   // neue Nummer = Browser lädt die Bilder frisch
 async function findImage() {
   return L.img + V;
 }
@@ -515,7 +518,8 @@ findImage().then(src => {
 
     // Nummern auf die Fenster schreiben
     Object.entries(L.nums.pos).forEach(([d, [x, y]]) => {
-      const n = document.createElement('div'); n.className = 'wnum'; n.textContent = d; n.dataset.d = d;
+      const n = document.createElement('div'); n.className = 'wnum' + (+d === 24 ? ' big' : ''); n.textContent = d; n.dataset.d = d;
+      n.addEventListener('animationend', () => n.classList.remove('shake'));
       const [l, t] = px(x, y);
       n.style.left = l + '%'; n.style.top = t + '%';
       n.style.fontSize = ((+d === 24 ? L.nums.h24 : L.nums.h) * 0.62 / 0.68 / L.W * 100) + 'cqw';
