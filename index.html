@@ -3,58 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Adventskalender</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
 <style>
   * { box-sizing:border-box; }
-  body { margin:0; min-height:100vh; font-family:'Cormorant Garamond', Georgia, serif;
-         background:radial-gradient(circle at 50% 30%, #a8693a, #7a4520 80%); color:#fdf3e3;
-         display:flex; flex-direction:column; align-items:center; overflow-x:hidden; }
-  h1 { font-weight:500; letter-spacing:.3em; font-size:24px; margin:40px 0 4px; }
-  .orn { color:#f3e2c7; font-size:18px; margin-bottom:30px; letter-spacing:.2em; }
-
-  .house { position:relative; width:330px; margin-top:110px; }
-  .chimney { position:absolute; top:-120px; right:18px; width:44px; height:80px;
-             background:repeating-linear-gradient(0deg,#9a5a2c 0 14px,#f3e2c7 14px 15px);
-             border:2px solid #f3e2c7; }
-  .chimney::before { content:""; position:absolute; top:-12px; left:-6px; right:-6px; height:16px;
-             background:#fffaf2; border-radius:10px; }
-  .roof { position:absolute; top:-105px; left:-15px; width:360px; height:110px;
-          clip-path:polygon(50% 0, 100% 100%, 0 100%); background:#fffaf2; }
-  .roof::after { content:""; position:absolute; inset:14px 22px 0;
-          clip-path:polygon(50% 0, 100% 100%, 0 100%); background:#9a5a2c; }
-  .gable { position:absolute; top:-55px; width:100%; text-align:center; font-size:24px; color:#f3e2c7; z-index:2; }
-  .walls { position:relative; background:#9a5a2c; border:2px solid #f3e2c7; border-top:none;
-           padding:20px 18px 0; }
-  .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px 12px; }
-  .grid .last { grid-column:1 / -1; display:flex; justify-content:center; gap:12px; }
-  .win { position:relative; width:62px; height:52px; border:2px solid #f3e2c7;
-         border-radius:30px 30px 4px 4px; display:flex; align-items:center; justify-content:center;
-         font-size:22px; color:#fdf3e3; transition:all .6s; }
-  .win::after { content:""; position:absolute; bottom:-6px; left:-4px; right:-4px; height:9px;
-         background:#fffaf2; border-radius:6px; }
-  .lit { background:radial-gradient(circle, #ffd27a, #f0952e); color:#5a2d0c;
-         box-shadow:0 0 22px 8px rgba(255,190,90,.75); animation:pulse 1s ease-in-out 3; }
-  @keyframes pulse { 50% { box-shadow:0 0 35px 14px rgba(255,200,100,.95); } }
-  .opened { transform:scale(1.15); opacity:.85; }
-
-  .bottom { position:relative; height:150px; display:flex; justify-content:center; align-items:flex-end; margin-top:20px; }
-  .door { width:96px; height:130px; border:2px solid #f3e2c7; border-radius:48px 48px 0 0;
-          display:flex; align-items:center; justify-content:center; position:relative; z-index:2; }
-  .door span { width:62px; height:62px; border:3px dotted #f3e2c7; border-radius:50%;
-          display:flex; align-items:center; justify-content:center; font-size:28px; }
-  .door.lit span { border-color:#5a2d0c; }
-  .lantern { position:absolute; bottom:50px; width:16px; height:22px; border:2px solid #3a2414;
-          background:#ffcf6e; box-shadow:0 0 18px 6px rgba(255,190,90,.7); border-radius:3px; z-index:2; }
-  .tree { position:absolute; bottom:0; width:0; height:0; border-left:38px solid transparent;
-          border-right:38px solid transparent; border-bottom:110px solid #b8763f; z-index:3;
-          filter:drop-shadow(0 0 1px #fffaf2) drop-shadow(0 0 1px #fffaf2); }
-  .snow { position:relative; width:420px; height:50px; margin-top:-20px; background:#fffaf2;
-          border-radius:50% 50% 0 0 / 100% 100% 0 0; z-index:4; }
+  body { margin:0; min-height:100vh; background:#b07a4c; font-family:'Cormorant Garamond', Georgia, serif;
+         display:flex; align-items:center; justify-content:center; }
+  .wrap { position:relative; width:100%; max-width:600px; }
+  .wrap img { width:100%; display:block; }
+  .glow { position:absolute; transform:translate(-50%,-50%); border-radius:45% 45% 10% 10%;
+          background:radial-gradient(ellipse, rgba(255,215,120,.95), rgba(255,170,60,.6) 50%, transparent 75%);
+          mix-blend-mode:screen; opacity:0; pointer-events:none; }
+  .glow.on { animation:pulse 1.2s ease-in-out 3 forwards; }
+  @keyframes pulse { 0% {opacity:0;} 50% {opacity:1;} 100% {opacity:.85;} }
 
   .overlay { position:fixed; inset:0; background:rgba(60,30,10,.75); display:none;
              align-items:center; justify-content:center; padding:20px; }
-  .overlay.show { display:flex; animation:fade .6s; }
+  .overlay.show { display:flex; animation:fade .7s; }
   @keyframes fade { from { opacity:0; } }
   .close { position:absolute; top:20px; right:20px; width:40px; height:40px; border-radius:50%;
            border:2px solid #fdf3e3; background:none; color:#fdf3e3; font-size:22px; }
@@ -65,79 +30,4 @@
   .card h2 { font-weight:500; letter-spacing:.25em; font-size:20px; margin:0 0 6px; }
   .card .line { font-size:14px; margin-bottom:20px; }
   .card .text { font-size:19px; line-height:1.45; }
-  .card .text p { margin:0 0 14px; }
-  .card .foot { margin-top:18px; color:#7a4520; font-size:22px; }
-</style>
-</head>
-<body>
-<h1>ADVENTSKALENDER</h1>
-<div class="orn">— ❦ —</div>
-
-<div class="house">
-  <div class="chimney"></div>
-  <div class="roof"></div>
-  <div class="gable">♡</div>
-  <div class="walls">
-    <div class="grid" id="grid"></div>
-    <div class="bottom">
-      <div class="tree" style="left:-30px"></div>
-      <div class="lantern" style="left:88px"></div>
-      <div class="door" id="w24"><span>24</span></div>
-      <div class="lantern" style="right:88px"></div>
-      <div class="tree" style="right:-30px"></div>
-    </div>
-  </div>
-  <div class="snow" style="margin-left:-45px"></div>
-</div>
-
-<div class="overlay" id="overlay">
-  <button class="close" onclick="overlay.classList.remove('show')">✕</button>
-  <div class="card">
-    <svg class="bow" width="160" height="110" viewBox="0 0 160 110">
-      <g fill="none" stroke="#7a1f1f" stroke-width="5" stroke-linecap="round">
-        <path d="M80 30 C50 0, 20 15, 40 35 C55 45, 75 35, 80 30"/>
-        <path d="M80 30 C110 0, 140 15, 120 35 C105 45, 85 35, 80 30"/>
-        <path d="M78 32 C65 60, 40 80, 25 105"/>
-        <path d="M82 32 C95 60, 120 80, 135 105"/>
-      </g>
-      <circle cx="80" cy="30" r="7" fill="#7a1f1f"/>
-    </svg>
-    <h2 id="title"></h2>
-    <div class="line">—— • ——</div>
-    <div class="text" id="text"></div>
-    <div class="foot">❧ ♡ ❧</div>
-  </div>
-</div>
-
-<script>
-  // Hier deine Nachrichten eintragen (1–24)
-  const messages = [];
-  for (let i = 1; i <= 24; i++) messages[i] = "<p>Nachricht für Türchen " + i + " folgt bald …</p>";
-  messages[1] = `
-    <p>Ich weiß, ich weiß –<br>eigentlich wolltest du keine Süßigkeiten.</p>
-    <p>Aber mal ehrlich:<br>Ein Adventskalender ohne etwas Süßes? Das wäre doch gegen sämtliche Weihnachtsregeln.</p>
-    <p>Also machen wir heute eine kleine Ausnahme.<br>Oder vielleicht auch zwei.</p>
-    <p><i>Und jetzt bin ich gespannt, ob du wirklich noch ein bisschen Chinesisch verstehst:</i></p>
-    <p style="font-size:24px">你能看懂这句话吗？</p>`;
-
-  const grid = document.getElementById("grid");
-  let html = "";
-  for (let i = 1; i <= 20; i++) html += `<div class="win" id="w${i}">${i}</div>`;
-  html += `<div class="last">` +
-          [21,22,23].map(i => `<div class="win" id="w${i}">${i}</div>`).join("") + `</div>`;
-  grid.innerHTML = html;
-
-  const day = parseInt(new URLSearchParams(location.search).get("tag"));
-  if (day >= 1 && day <= 24) {
-    const w = document.getElementById("w" + day);
-    setTimeout(() => w.classList.add("lit"), 400);
-    setTimeout(() => w.classList.add("opened"), 3200);
-    setTimeout(() => {
-      document.getElementById("title").textContent = "TÜRCHEN NR. " + day;
-      document.getElementById("text").innerHTML = messages[day];
-      overlay.classList.add("show");
-    }, 3900);
-  }
-</script>
-</body>
-</html>
+  .card .text p { margin:0 0 14px; }...
