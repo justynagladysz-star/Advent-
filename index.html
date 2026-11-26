@@ -134,7 +134,8 @@
     box-shadow: 0 .2cqw .2cqw rgba(70,35,10,.45); }
   .divider span:nth-child(2) { width: 1.9cqw; height: 1.9cqw; }
   .text { font-family: 'EB Garamond', Georgia, serif; font-weight: 500; font-size: calc(4.6cqw * var(--k)); line-height: 1.27; letter-spacing: .03em; }
-  .text p { margin: 0 0 calc(3cqw * var(--k)); }
+  .text p { margin: 0 auto calc(3cqw * var(--k)); max-width: var(--w, 12.6em); }
+  .text p.zh { max-width: none; }
   .text p:last-child { margin-bottom: 0; }
   .text em { font-style: italic; }
   .text .zh { font-family: 'Noto Serif SC', serif; font-size: calc(5.4cqw * var(--k)); letter-spacing: .16em; padding-left: .16em; margin: calc(4cqw * var(--k)) 0 0; }
@@ -177,10 +178,10 @@
    Jeder Absatz steht in <p> ... </p>
    ========================================================= */
 const messages = {
-  1: `<p>Ich weiß, ich weiß –<br>eigentlich wolltest du<br>keine Süßigkeiten.</p>
-      <p>Aber mal ehrlich:<br>Ein Adventskalender ohne etwas Süßes? Das wäre doch gegen sämtliche Weihnachtsregeln.</p>
-      <p>Also machen wir heute<br>eine kleine Ausnahme.<br>Oder vielleicht auch zwei.</p>
-      <p>Und jetzt bin ich gespannt,<br>ob du wirklich noch ein bisschen<br>Chinesisch verstehst:</p>
+  1: `<p>Ich weiß, ich weiß – eigentlich wolltest du keine Süßigkeiten.</p>
+      <p>Aber mal ehrlich: Ein Adventskalender ohne etwas Süßes? Das wäre doch gegen sämtliche Weihnachtsregeln.</p>
+      <p>Also machen wir heute eine kleine Ausnahme. Oder vielleicht auch zwei.</p>
+      <p>Und jetzt bin ich gespannt, ob du wirklich noch ein bisschen Chinesisch verstehst:</p>
       <p class="zh">你能看懂这句话吗？</p>`,
   2: `<p>Nachricht für Tag 2 folgt.</p>`,
   3: `<p>Nachricht für Tag 3 folgt.</p>`,
@@ -336,12 +337,43 @@ function openCard(d) {
 document.getElementById('close').onclick = () => overlay.classList.remove('show');
 
 /* Längere Nachrichten werden automatisch etwas kleiner geschrieben, damit sie auf die Karte passen */
+function lineWidths(p) {
+  const r = document.createRange(); r.selectNodeContents(p);
+  const rows = {};
+  for (const b of r.getClientRects()) {
+    if (b.width < 1) continue;
+    const key = Math.round(b.top / 4);
+    rows[key] = rows[key] ? [Math.min(rows[key][0], b.left), Math.max(rows[key][1], b.right)] : [b.left, b.right];
+  }
+  return Object.values(rows).map(([l, rr]) => rr - l);
+}
+/* Zeilen möglichst gleich lang machen: probiert verschiedene Textbreiten und nimmt die gleichmäßigste */
+function evenLines() {
+  const text = document.getElementById('text');
+  const ps = [...text.querySelectorAll('p:not(.zh)')];
+  if (!ps.length) return;
+  let best = null;
+  for (let w = 9; w <= 16; w += 0.2) {
+    text.style.setProperty('--w', w + 'em');
+    const all = ps.map(lineWidths);
+    const widest = Math.max(...all.flat());
+    let score = 0;
+    all.forEach(lines => lines.forEach((lw, i) => {
+      const gap = (widest - lw) / widest;
+      score += (i === lines.length - 1 ? 0.6 : 1) * gap * gap;   // letzte Zeile darf etwas kürzer sein
+    }));
+    score += all.flat().length * 0.004;                           // nicht unnötig viele Zeilen
+    if (!best || score < best.score) best = { score, w };
+  }
+  text.style.setProperty('--w', best.w + 'em');
+}
 function fitText() {
   const inner = document.getElementById('inner');
   let k = 1;
   inner.style.setProperty('--k', k);
+  evenLines();
   while (inner.scrollHeight > inner.clientHeight + 1 && k > 0.5) {
-    k -= 0.03; inner.style.setProperty('--k', k);
+    k -= 0.03; inner.style.setProperty('--k', k); evenLines();
   }
 }
 addEventListener('resize', () => { if (overlay.classList.contains('show')) fitText(); });
