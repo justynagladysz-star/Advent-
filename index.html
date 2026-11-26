@@ -54,12 +54,11 @@
   .star {
     position: absolute; transform: translate(-50%, -50%);
     pointer-events: none;
-    animation: twinkle var(--d, 2.4s) ease-in-out var(--delay, 0s) infinite;
+    animation: twinkle var(--d, 2.4s) ease-in-out var(--delay, 0s) infinite; will-change: transform, opacity;
   }
-  .star svg { width: 100%; height: 100%; display: block;
-    filter: drop-shadow(0 0 3px #fff) drop-shadow(0 0 8px rgba(255,236,180,.95)) drop-shadow(0 0 16px rgba(255,210,120,.7)); }
-  .star::before { content: ""; position: absolute; inset: -60%; border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,240,200,.55), rgba(255,220,150,.15) 40%, transparent 70%); }
+  .star svg { position: relative; width: 100%; height: 100%; display: block; }
+  .star::before { content: ""; position: absolute; inset: -70%; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,.9) 0, rgba(255,240,200,.6) 14%, rgba(255,220,150,.22) 38%, transparent 68%); }
   @keyframes twinkle {
     0%, 100% { opacity: .55; transform: translate(-50%,-50%) scale(.85) rotate(0deg); }
     50%      { opacity: 1;   transform: translate(-50%,-50%) scale(1.25) rotate(20deg); }
@@ -67,7 +66,7 @@
   /* gemalte Schneeflocken und Sterne glänzen selbst: weicher Schimmer genau auf der Flocke, ohne Stern darüber */
   .glint { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none;
     background: radial-gradient(closest-side, rgba(255,255,255,.95), rgba(255,248,230,.55) 35%, rgba(255,235,200,.18) 65%, transparent 100%);
-    mix-blend-mode: screen; animation: glint var(--d, 2.6s) ease-in-out var(--delay, 0s) infinite; }
+    animation: glint var(--d, 2.6s) ease-in-out var(--delay, 0s) infinite; will-change: transform, opacity; }
   @keyframes glint { 0%, 100% { opacity: .15; transform: translate(-50%,-50%) scale(.85); }
                      50% { opacity: .9; transform: translate(-50%,-50%) scale(1.1); } }
   #snow { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; }
@@ -170,8 +169,8 @@
   .cut-arm-r.on { animation: wave-r .45s ease-in-out 7 alternate; }
   @keyframes wave-l { from { transform: rotate(10deg); } to { transform: rotate(-30deg); } }
   @keyframes wave-r { from { transform: rotate(-10deg); } to { transform: rotate(30deg); } }
-  .flock { position: absolute; z-index: 3; pointer-events: none; border-radius: 50%;
-    background: radial-gradient(circle at 40% 35%, #fff, #f3ebe2 70%); box-shadow: 0 0 3px rgba(255,255,255,.8);
+  .flock { position: absolute; z-index: 3; pointer-events: none; border-radius: 50%; transform-origin: center;
+    background: radial-gradient(circle, rgba(255,253,248,.95) 0, rgba(255,250,242,.7) 28%, rgba(255,246,234,.25) 55%, transparent 72%);
     animation: flockfall var(--t) cubic-bezier(.3,0,.8,.6) forwards; }
   @keyframes flockfall { 0% { transform: translate(0,0); opacity: 0; } 12% { opacity: 1; } 85% { opacity: 1; }
     100% { transform: translate(var(--dx), var(--dy)); opacity: 0; } }
@@ -218,11 +217,12 @@
   .sparkles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
   .flake {
     position: absolute; top: -40px;
-    animation: drift var(--fall) linear var(--delay) infinite;
+    animation: drift var(--fall) linear var(--delay) infinite; will-change: transform;
   }
-  .flake svg { display: block; width: 100%; height: 100%;
-    animation: sparkle var(--tw) ease-in-out var(--delay) infinite;
-    filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 6px rgba(255,240,205,.9)) drop-shadow(0 0 12px rgba(255,220,150,.6)); }
+  .flake svg { position: relative; display: block; width: 100%; height: 100%;
+    animation: sparkle var(--tw) ease-in-out var(--delay) infinite; will-change: transform, opacity; }
+  .flake::before { content: ""; position: absolute; inset: -55%; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,250,235,.55), rgba(255,225,160,.18) 40%, transparent 68%); }
   @keyframes drift {
     from { transform: translate(0, 0) rotate(0deg); }
     50%  { transform: translate(var(--sway), 55vh) rotate(90deg); }
@@ -410,7 +410,7 @@ function addStar(parent, leftPct, topPct, sizePx) {
 ['karte-lebkuchen.webp','schnee.jpg', (PC ? 'pc' : 'handy') + '-herz.png', (PC ? 'pc' : 'handy') + '-herz-loch.png'].forEach(u => { const i = new Image(); i.src = u; });
 
 const REPO = 'justynagladysz-star/Advent-';
-const V = '?v=26';   // neue Nummer = Browser lädt die Bilder frisch
+const V = '?v=28';   // neue Nummer = Browser lädt die Bilder frisch
 async function findImage() {
   return L.img + V;
 }
@@ -505,7 +505,7 @@ findImage().then(src => {
       for (let i = 0; i < 16; i++) {
         setTimeout(() => {
           const f = document.createElement('div'); f.className = 'flock';
-          const sz = (2 + Math.random() * 3.5) * Math.max(1, scale * 1.6);
+          const sz = (5 + Math.random() * 7) * Math.max(1, scale * 1.6);
           const ry = Math.random() * 0.75, half = 0.12 + ry * 0.4;
           const [l, t] = px(bx + bw * (0.5 + (Math.random() * 2 - 1) * half), by + bh * (0.08 + ry * 0.8));
           f.style.left = l + '%'; f.style.top = t + '%'; f.style.width = f.style.height = sz + 'px';
@@ -795,7 +795,7 @@ placeScene();
   const CRYSTAL = '<svg viewBox="-12 -12 24 24" fill="none" stroke="#fffaf3" stroke-width="1.3" stroke-linecap="round">' +
     [0, 60, 120].map(r => '<g transform="rotate(' + r + ')"><path d="M0 -10 V10 M-3 -7 L0 -4.5 L3 -7 M-3 7 L0 4.5 L3 7"/></g>').join('') + '</svg>';
   const SPARK = '<svg viewBox="0 0 40 40"><path d="M20 0 C21 14 26 19 40 20 C26 21 21 26 20 40 C19 26 14 21 0 20 C14 19 19 14 20 0 Z" fill="#fffaf0"/></svg>';
-  for (let i = 0; i < 34; i++) {
+  for (let i = 0; i < (innerWidth < 700 ? 20 : 30); i++) {
     const f = document.createElement('div');
     f.className = 'flake';
     const crystal = Math.random() < 0.6, size = crystal ? 12 + Math.random() * 16 : 8 + Math.random() * 10;
@@ -811,53 +811,56 @@ placeScene();
   }
 })();
 
-/* ---------- Fallender Schnee ---------- */
+/* ---------- Fallender Schnee (sparsam gezeichnet, damit es auf dem Handy flüssig läuft) ---------- */
 (function () {
   const c = document.getElementById('snow'), ctx = c.getContext('2d');
   let W, H, flakes = [];
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
   function resize() {
     W = innerWidth; H = innerHeight;
     c.width = W * dpr; c.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
+  // Flocken einmal vorzeichnen und dann nur noch kopieren
+  function sprite(size, draw) {
+    const s = document.createElement('canvas'), px = Math.ceil(size * 2 * 2);
+    s.width = s.height = px; const g = s.getContext('2d'); g.scale(2, 2); g.translate(size, size); draw(g); return s;
+  }
+  const DOT = sprite(6, g => { const gr = g.createRadialGradient(0, 0, 0, 0, 0, 6);
+    gr.addColorStop(0, 'rgba(255,253,248,.95)'); gr.addColorStop(.25, 'rgba(255,250,242,.75)'); gr.addColorStop(.55, 'rgba(255,246,234,.28)'); gr.addColorStop(1, 'rgba(255,244,230,0)');
+    g.fillStyle = gr; g.beginPath(); g.arc(0, 0, 6, 0, 6.29); g.fill(); });
+  const CRY = sprite(9, g => { g.strokeStyle = '#fff'; g.lineWidth = 1.1; g.lineCap = 'round';
+    for (let i = 0; i < 6; i++) { g.rotate(Math.PI / 3); g.beginPath(); g.moveTo(0, 0); g.lineTo(0, -8);
+      g.moveTo(0, -4.4); g.lineTo(-2.2, -6.4); g.moveTo(0, -4.4); g.lineTo(2.2, -6.4); g.stroke(); } });
   function make(top) {
-    const crystal = Math.random() < 0.22;
+    const crystal = false, depth = Math.random();
     return {
       x: Math.random() * W, y: top ? -20 : Math.random() * H,
-      r: crystal ? 4 + Math.random() * 4 : 1 + Math.random() * 2.6,
+      r: 1.6 + depth * depth * 4.2,
       vy: 0.35 + Math.random() * 0.9, sway: 0.4 + Math.random() * 1.2,
       phase: Math.random() * 6.28, spin: (Math.random() - .5) * 0.02, rot: Math.random() * 6.28,
-      a: 0.55 + Math.random() * 0.45, crystal
+      a: 0.35 + Math.random() * 0.45, crystal
     };
   }
-  function drawCrystal(f) {
-    ctx.save(); ctx.translate(f.x, f.y); ctx.rotate(f.rot);
-    ctx.strokeStyle = 'rgba(255,255,255,' + f.a + ')'; ctx.lineWidth = 1.1; ctx.lineCap = 'round';
-    for (let i = 0; i < 6; i++) {
-      ctx.rotate(Math.PI / 3);
-      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -f.r);
-      ctx.moveTo(0, -f.r * .55); ctx.lineTo(-f.r * .28, -f.r * .8);
-      ctx.moveTo(0, -f.r * .55); ctx.lineTo(f.r * .28, -f.r * .8);
-      ctx.stroke();
-    }
-    ctx.restore();
-  }
+  let last = 0;
   function tick(t) {
+    const k = last ? Math.min(3, (t - last) / 16.7) : 1; last = t;
     ctx.clearRect(0, 0, W, H);
     for (const f of flakes) {
-      f.y += f.vy; f.x += Math.sin(t / 1600 + f.phase) * f.sway * 0.35; f.rot += f.spin;
+      f.y += f.vy * k; f.x += Math.sin(t / 1600 + f.phase) * f.sway * 0.35 * k; f.rot += f.spin * k;
       if (f.y > H + 10) Object.assign(f, make(true));
-      if (f.crystal) drawCrystal(f);
-      else {
-        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, 6.28);
-        ctx.fillStyle = 'rgba(255,255,255,' + f.a + ')'; ctx.shadowColor = '#fff'; ctx.shadowBlur = 4;
-        ctx.fill(); ctx.shadowBlur = 0;
+      ctx.globalAlpha = f.a;
+      if (f.crystal) {
+        const d = f.r * 2.25;
+        ctx.save(); ctx.translate(f.x, f.y); ctx.rotate(f.rot); ctx.drawImage(CRY, -d / 2, -d / 2, d, d); ctx.restore();
+      } else {
+        const d = f.r * 3.2; ctx.drawImage(DOT, f.x - d / 2, f.y - d / 2, d, d);
       }
     }
+    ctx.globalAlpha = 1;
     requestAnimationFrame(tick);
   }
   resize(); addEventListener('resize', resize);
-  const n = Math.round(Math.min(110, W * H / 6000));
+  const n = Math.round(Math.min(innerWidth < 700 ? 60 : 110, W * H / 6000));
   for (let i = 0; i < n; i++) flakes.push(make(false));
   requestAnimationFrame(tick);
 })();
