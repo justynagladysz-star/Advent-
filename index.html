@@ -2,101 +2,182 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Adventskalender</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Noto+Serif+SC:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Serif+SC:wght@400&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; }
-  html, body { margin: 0; }
+  html, body { margin: 0; height: 100%; }
   body {
-    min-height: 100vh;
-    background: #b07a4c;
-    font-family: 'Cormorant Garamond', Georgia, serif;
-    display: flex; align-items: center; justify-content: center;
+    min-height: 100dvh;
+    background:
+      radial-gradient(circle at 20% 15%, rgba(255,235,200,.18), transparent 45%),
+      radial-gradient(circle at 80% 70%, rgba(90,50,20,.18), transparent 50%),
+      #b98559;
+    font-family: 'EB Garamond', Georgia, serif;
+    overflow-x: hidden;
   }
-  .wrap { position: relative; width: 100%; max-width: 640px; }
-  .wrap img { width: 100%; display: block; }
-  .loading { color: #fdf3e3; font-size: 20px; letter-spacing: .2em; text-align: center; padding: 40px; }
 
-  /* Leuchten des gescannten Fensters */
+  /* ---------- Kalender, bildschirmfüllend ---------- */
+  .page {
+    min-height: 100dvh; max-width: 640px; margin: 0 auto;
+    display: flex; flex-direction: column;
+  }
+  .top {
+    position: relative; flex: 1; min-height: 70px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: calc(env(safe-area-inset-top) + 14px) 16px 8px;
+    color: #fdf6ea;
+  }
+  .top h1 {
+    font-family: 'Cormorant Garamond', serif; font-weight: 500;
+    letter-spacing: .35em; font-size: clamp(18px, 5.5vw, 26px); margin: 0 0 6px; padding-left: .35em;
+  }
+  .top .sprig { width: 150px; opacity: .9; }
+  .wrap { position: relative; width: 100%; }
+  .wrap img { width: 100%; display: block; }
+  .bottom {
+    flex: 1; min-height: 20px;
+    background: linear-gradient(#f2ebe1, #e8dccb);
+  }
+  .loading {
+    position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+    color: #fdf6ea; letter-spacing: .3em; font-family: 'Cormorant Garamond', serif;
+  }
+
+  /* ---------- Funkelnde Sterne ---------- */
+  .star {
+    position: absolute; transform: translate(-50%, -50%);
+    pointer-events: none;
+    animation: twinkle var(--d, 2.4s) ease-in-out var(--delay, 0s) infinite;
+  }
+  .star svg { width: 100%; height: 100%; display: block;
+    filter: drop-shadow(0 0 4px rgba(255,255,255,.9)) drop-shadow(0 0 8px rgba(255,240,200,.6)); }
+  @keyframes twinkle {
+    0%, 100% { opacity: .15; transform: translate(-50%,-50%) scale(.7) rotate(0deg); }
+    50%      { opacity: 1;   transform: translate(-50%,-50%) scale(1.1) rotate(15deg); }
+  }
+
+  /* ---------- Leuchtendes Fenster ---------- */
   .glow {
     position: absolute; transform: translate(-50%, -50%);
     border-radius: 48% 48% 14% 14%;
     background: radial-gradient(ellipse at 50% 55%,
-      rgba(255, 225, 140, .95) 0%,
-      rgba(255, 180, 70, .7) 40%,
-      rgba(255, 150, 40, .25) 65%,
-      transparent 78%);
-    mix-blend-mode: screen;
-    opacity: 0; pointer-events: none;
+      rgba(255,228,145,.95) 0%, rgba(255,180,70,.7) 40%,
+      rgba(255,150,40,.25) 65%, transparent 78%);
+    mix-blend-mode: screen; opacity: 0; pointer-events: none;
   }
   .glow.on { animation: pulse 1.3s ease-in-out 2 forwards; }
-  @keyframes pulse {
-    0%   { opacity: 0; }
-    50%  { opacity: 1; }
-    100% { opacity: .9; }
-  }
+  @keyframes pulse { 0% {opacity:0;} 50% {opacity:1;} 100% {opacity:.9;} }
 
-  /* Nachricht */
+  /* ---------- Nachricht ---------- */
   .overlay {
-    position: fixed; inset: 0; background: rgba(70, 38, 16, .78);
-    display: none; align-items: center; justify-content: center; padding: 24px;
-    overflow-y: auto;
+    position: fixed; inset: 0; display: none; overflow-y: auto;
+    background:
+      radial-gradient(circle at 50% 30%, rgba(255,220,170,.12), transparent 60%),
+      radial-gradient(circle at 50% 100%, rgba(0,0,0,.25), transparent 60%),
+      #7e4f2b;
+    padding: calc(env(safe-area-inset-top) + 70px) 18px 40px;
   }
-  .overlay.show { display: flex; animation: fade .8s ease; }
+  .overlay.show { display: block; animation: fade .8s ease; }
   @keyframes fade { from { opacity: 0; } }
   .close {
-    position: fixed; top: 18px; right: 18px; width: 42px; height: 42px; border-radius: 50%;
-    border: 2px solid #fdf3e3; background: none; color: #fdf3e3; font-size: 22px; line-height: 1;
-    cursor: pointer;
+    position: fixed; top: calc(env(safe-area-inset-top) + 14px); right: 16px; z-index: 5;
+    width: 44px; height: 44px; border-radius: 50%;
+    border: 1.5px solid #fdf6ea; background: none; color: #fdf6ea;
+    font-size: 22px; line-height: 1; cursor: pointer;
   }
   .card {
-    position: relative; width: 100%; max-width: 360px; margin: 40px 0;
-    background: #f6ead6; color: #3a2414; text-align: center;
-    padding: 76px 26px 30px; border-radius: 4px;
-    box-shadow: 0 12px 34px rgba(0, 0, 0, .45);
-    outline: 1px solid #c9b18d; outline-offset: -10px;
-    animation: pop .8s ease;
+    position: relative; width: 100%; max-width: 440px; margin: 30px auto 0;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(255,255,255,.35), transparent 55%),
+      radial-gradient(circle at 80% 85%, rgba(180,140,100,.15), transparent 50%),
+      #f2e3cb;
+    color: #2e1d12; text-align: center;
+    padding: 150px 30px 34px; border-radius: 6px;
+    box-shadow: 0 18px 40px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.25);
+    animation: pop .9s ease;
   }
-  @keyframes pop { from { transform: scale(.85) translateY(20px); opacity: 0; } }
-  .bow { position: absolute; top: -22px; left: 50%; transform: translateX(-50%); width: 230px; }
-  .card h2 { font-weight: 500; letter-spacing: .28em; font-size: 20px; margin: 0 0 8px; }
-  .divider { width: 80px; height: 1px; background: #3a2414; margin: 0 auto 22px; position: relative; }
-  .divider::after { content: ""; position: absolute; left: 50%; top: -2px; width: 5px; height: 5px;
+  .card::before {
+    content: ""; position: absolute; inset: 12px;
+    border: 1px solid rgba(80,50,30,.35); border-radius: 3px; pointer-events: none;
+  }
+  @keyframes pop { from { transform: scale(.88) translateY(24px); opacity: 0; } }
+  .ribbon { position: absolute; top: -34px; left: 50%; transform: translateX(-50%);
+    width: 92%; pointer-events: none; z-index: 2; }
+  .card h2 {
+    font-family: 'Cormorant Garamond', serif; font-weight: 600;
+    letter-spacing: .32em; font-size: 22px; margin: 0 0 12px; padding-left: .32em;
+  }
+  .divider { width: 90px; height: 1px; background: #3a2414; margin: 0 auto 26px; position: relative; }
+  .divider::after { content: ""; position: absolute; left: 50%; top: -3px; width: 7px; height: 7px;
     background: #3a2414; border-radius: 50%; transform: translateX(-50%); }
-  .text { font-size: 20px; line-height: 1.4; }
-  .text p { margin: 0 0 16px; }
+  .text { font-size: 21px; line-height: 1.35; letter-spacing: .02em; }
+  .text p { margin: 0 0 18px; }
   .text em { font-style: italic; }
-  .text .zh { font-family: 'Noto Serif SC', serif; font-size: 22px; letter-spacing: .12em; margin-top: 6px; }
-  .ornament { margin-top: 8px; width: 150px; }
+  .text .zh { font-family: 'Noto Serif SC', serif; font-size: 24px; letter-spacing: .14em; margin: 22px 0 6px; }
+  .dot { width: 3px; height: 3px; background: #3a2414; border-radius: 50%; margin: 10px auto 18px; opacity: .7; }
+  .ornament { width: 190px; }
 </style>
 </head>
 <body>
 
-<div class="wrap" id="wrap">
-  <div class="loading" id="loading">ADVENTSKALENDER</div>
-  <img id="house" alt="Lebkuchenhaus" style="display:none">
-  <div class="glow" id="glow"></div>
+<div class="loading" id="loading">ADVENTSKALENDER</div>
+
+<div class="page" id="page" style="visibility:hidden">
+  <div class="top" id="top">
+    <h1>ADVENTSKALENDER</h1>
+    <svg class="sprig" viewBox="0 0 150 20" fill="none" stroke="#fdf6ea" stroke-width="1.2" stroke-linecap="round">
+      <path d="M0 10 H45 M105 10 H150"/>
+      <path d="M55 10 H95"/>
+      <path d="M62 10 l6 -6 M62 10 l6 6 M72 10 l6 -6 M72 10 l6 6 M82 10 l6 -6 M82 10 l6 6"/>
+    </svg>
+  </div>
+  <div class="wrap" id="wrap">
+    <img id="house" alt="Lebkuchenhaus">
+    <div class="glow" id="glow"></div>
+  </div>
+  <div class="bottom"></div>
 </div>
 
 <div class="overlay" id="overlay">
   <button class="close" id="close" aria-label="Schließen">✕</button>
   <div class="card">
-    <svg class="bow" viewBox="0 0 230 130" fill="none" stroke="#7a2424" stroke-width="3" stroke-linecap="round">
-      <path d="M115 30 C 80 0, 40 10, 50 30 C 60 48, 100 40, 115 30 Z" fill="none"/>
-      <path d="M115 30 C 150 0, 190 10, 180 30 C 170 48, 130 40, 115 30 Z" fill="none"/>
-      <path d="M112 32 C 80 60, 40 70, 20 125"/>
-      <path d="M118 32 C 150 60, 195 65, 215 115"/>
-      <circle cx="115" cy="31" r="6" fill="#7a2424"/>
+    <!-- Satinschleife -->
+    <svg class="ribbon" viewBox="0 0 400 300" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <defs>
+        <linearGradient id="sat" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#9b3030"/>
+          <stop offset=".5" stop-color="#7a1f1f"/>
+          <stop offset="1" stop-color="#5a1414"/>
+        </linearGradient>
+      </defs>
+      <!-- Enden -->
+      <path d="M196 50 C 150 90, 70 110, 40 160 C 22 190, 18 230, 8 270" stroke="url(#sat)" stroke-width="9"/>
+      <path d="M196 50 C 150 90, 70 110, 40 160 C 22 190, 18 230, 8 270" stroke="#c95a5a" stroke-width="2" opacity=".45"/>
+      <path d="M204 50 C 250 85, 320 100, 352 150 C 372 180, 378 205, 392 235" stroke="url(#sat)" stroke-width="9"/>
+      <path d="M204 50 C 250 85, 320 100, 352 150 C 372 180, 378 205, 392 235" stroke="#c95a5a" stroke-width="2" opacity=".45"/>
+      <!-- Schlaufen -->
+      <path d="M198 44 C 165 20, 120 10, 112 30 C 104 52, 150 62, 198 48" stroke="url(#sat)" stroke-width="9"/>
+      <path d="M198 44 C 165 20, 120 10, 112 30" stroke="#d17070" stroke-width="2" opacity=".5"/>
+      <path d="M202 44 C 235 20, 280 10, 288 30 C 296 52, 250 62, 202 48" stroke="url(#sat)" stroke-width="9"/>
+      <path d="M202 44 C 235 20, 280 10, 288 30" stroke="#d17070" stroke-width="2" opacity=".5"/>
+      <!-- Knoten -->
+      <ellipse cx="200" cy="46" rx="13" ry="11" fill="#6e1a1a"/>
+      <ellipse cx="197" cy="43" rx="5" ry="3.5" fill="#b44848" opacity=".6"/>
     </svg>
+
     <h2 id="title">TÜRCHEN NR. 1</h2>
     <div class="divider"></div>
     <div class="text" id="text"></div>
-    <svg class="ornament" viewBox="0 0 150 50" fill="none" stroke="#6b3a20" stroke-width="2" stroke-linecap="round">
-      <path d="M75 34 C 60 22, 62 8, 70 8 C 74 8, 75 12, 75 14 C 75 12, 76 8, 80 8 C 88 8, 90 22, 75 34 Z"/>
-      <path d="M58 26 H 10 M 30 26 l -8 -6 M 30 26 l -8 6 M 44 26 l -8 -6 M 44 26 l -8 6"/>
-      <path d="M92 26 H 140 M 120 26 l 8 -6 M 120 26 l 8 6 M 106 26 l 8 -6 M 106 26 l 8 6"/>
-      <path d="M75 38 v 8 M 71 42 l 4 4 4 -4"/>
+    <div class="dot"></div>
+    <svg class="ornament" viewBox="0 0 190 70" fill="none" stroke="#5a3218" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M95 46 C 76 32, 72 14, 84 12 C 90 11, 94 15, 95 19 C 96 15, 100 11, 106 12 C 118 14, 114 32, 95 46 Z"/>
+      <path d="M74 36 C 55 30, 30 30, 6 34"/>
+      <path d="M50 32 l -10 -8 M50 32 l -9 7 M32 32 l -10 -7 M32 32 l -9 8 M16 34 l -9 -6"/>
+      <path d="M116 36 C 135 30, 160 30, 184 34"/>
+      <path d="M140 32 l 10 -8 M140 32 l 9 7 M158 32 l 10 -7 M158 32 l 9 8 M174 34 l 9 -6"/>
+      <path d="M95 52 v 14 M89 56 c 2 3, 5 5, 6 8 M101 56 c -2 3, -5 5, -6 8"/>
     </svg>
   </div>
 </div>
@@ -109,8 +190,8 @@
 const messages = {
   1: `<p>Ich weiß, ich weiß –<br>eigentlich wolltest du<br>keine Süßigkeiten.</p>
       <p>Aber mal ehrlich:<br>Ein Adventskalender ohne etwas Süßes? Das wäre doch gegen sämtliche Weihnachtsregeln.</p>
-      <p>Also machen wir heute eine kleine Ausnahme.<br>Oder vielleicht auch zwei.</p>
-      <p><em>Und jetzt bin ich gespannt, ob du wirklich noch ein bisschen Chinesisch verstehst:</em></p>
+      <p>Also machen wir heute<br>eine kleine Ausnahme.<br>Oder vielleicht auch zwei.</p>
+      <p><em>Und jetzt bin ich gespannt,<br>ob du wirklich noch ein bisschen<br>Chinesisch verstehst:</em></p>
       <p class="zh">你能看懂这句话吗？</p>`,
   2: `<p>Nachricht für Tag 2 folgt.</p>`,
   3: `<p>Nachricht für Tag 3 folgt.</p>`,
@@ -137,7 +218,7 @@ const messages = {
   24: `<p>Nachricht für Tag 24 folgt.</p>`
 };
 
-/* Position der Fenster auf dem Bild (Bildgröße 1199 x 1312) */
+/* Positionen auf dem Bild (Bildgröße 1199 x 1312) */
 const IMG_W = 1199, IMG_H = 1312;
 const windows = {
   1:[365,370], 2:[518,370], 3:[683,370], 4:[835,370],
@@ -147,9 +228,28 @@ const windows = {
   20:[273,958], 21:[431,958], 22:[785,958], 23:[943,958],
   24:[610,1055]
 };
+/* Sterne und Schneeflocken, die im Bild schon gemalt sind */
+const imageStars = [
+  [90,72,46], [307,100,40], [237,176,26], [82,322,46], [1068,72,34],
+  [1125,175,50], [1042,268,26], [78,705,30], [1135,695,26],
+  [1145,808,44], [195,1055,26], [598,298,22], [513,744,18], [828,1012,20]
+];
+
+const STAR = `<svg viewBox="0 0 40 40"><path d="M20 0 C21 14 26 19 40 20 C26 21 21 26 20 40 C19 26 14 21 0 20 C14 19 19 14 20 0 Z" fill="#fffaf0"/></svg>`;
+
+function addStar(parent, leftPct, topPct, sizePx) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  s.style.left = leftPct + '%';
+  s.style.top = topPct + '%';
+  s.style.width = s.style.height = sizePx + 'px';
+  s.style.setProperty('--d', (1.8 + Math.random() * 2.2).toFixed(2) + 's');
+  s.style.setProperty('--delay', (-Math.random() * 3).toFixed(2) + 's');
+  s.innerHTML = STAR;
+  parent.appendChild(s);
+}
 
 const REPO = 'justynagladysz-star/Advent-';
-
 async function findImage() {
   try {
     const r = await fetch('https://api.github.com/repos/' + REPO + '/contents/');
@@ -162,6 +262,7 @@ async function findImage() {
 
 const day = parseInt(new URLSearchParams(location.search).get('tag'), 10);
 const house = document.getElementById('house');
+const wrap = document.getElementById('wrap');
 const glow = document.getElementById('glow');
 const overlay = document.getElementById('overlay');
 
@@ -169,7 +270,18 @@ findImage().then(src => {
   house.src = src;
   house.onload = () => {
     document.getElementById('loading').style.display = 'none';
-    house.style.display = 'block';
+    document.getElementById('page').style.visibility = 'visible';
+
+    // Sterne auf dem Bild funkeln lassen
+    const scale = wrap.clientWidth / IMG_W;
+    imageStars.forEach(([x, y, size]) =>
+      addStar(wrap, x / IMG_W * 100, y / IMG_H * 100, Math.max(8, size * scale * 0.7)));
+    // zusätzliche Sterne oben im Himmel
+    const top = document.getElementById('top');
+    for (let i = 0; i < 9; i++) {
+      addStar(top, 5 + Math.random() * 90, 10 + Math.random() * 80, 6 + Math.random() * 10);
+    }
+
     if (windows[day]) {
       const [x, y] = windows[day];
       const big = day === 24;
@@ -187,8 +299,8 @@ function openCard() {
   document.getElementById('title').textContent = 'TÜRCHEN NR. ' + day;
   document.getElementById('text').innerHTML = messages[day] || '';
   overlay.classList.add('show');
+  overlay.scrollTop = 0;
 }
-
 document.getElementById('close').onclick = () => overlay.classList.remove('show');
 </script>
 </body>
