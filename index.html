@@ -29,7 +29,6 @@
   body.pc .title h1 { font-size: 4.4cqw; -webkit-text-stroke: .07cqw rgba(255,255,255,.55);
     text-shadow: 0 -.05cqw 0 #fff, 0 .08cqw 0 #f1e6d8, 0 .15cqw 0 #e2d0bb, 0 .22cqw .03cqw #c9aa88,
       0 .35cqw .5cqw rgba(70,35,10,.55), 0 0 1cqw rgba(255,240,215,.35); }
-  body.pc .title .sprig { width: 13cqw; margin-top: 1cqw; }
   .title {
     position: absolute; left: 0; right: 0; top: 11.5%; z-index: 2;
     display: flex; flex-direction: column; align-items: center;
@@ -46,7 +45,6 @@
       0 1.2cqw 1.6cqw rgba(70,35,10,.55),
       0 0 3cqw rgba(255,240,215,.35);
   }
-  .title .sprig { width: 44cqw; display: block; margin-top: 3cqw; }
   .loading {
     position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
     color: #fdf6ea; letter-spacing: .3em; font-family: 'Cormorant Garamond', serif;
@@ -160,6 +158,35 @@
     80%  { transform: translate(-50%, calc(-50% - var(--h) * .25)); }
     100% { transform: translate(-50%, -50%); }
   }
+  /* Tanne und Schneemann aus dem Bild selbst ausgeschnitten, nur während der Bewegung sichtbar */
+  .cut { position: absolute; pointer-events: none; z-index: 2; opacity: 0; }
+  .cut.on { opacity: 1; }
+  .cut-tree.on { animation: treeshake 1.1s ease-out; }
+  @keyframes treeshake {
+    0% { transform: rotate(0); } 10% { transform: rotate(-3.5deg); } 26% { transform: rotate(3deg); }
+    42% { transform: rotate(-2.2deg); } 58% { transform: rotate(1.4deg); } 74% { transform: rotate(-.7deg); } 100% { transform: rotate(0); }
+  }
+  .cut-arm-l.on { animation: wave-l .45s ease-in-out 7 alternate; }
+  .cut-arm-r.on { animation: wave-r .45s ease-in-out 7 alternate; }
+  @keyframes wave-l { from { transform: rotate(10deg); } to { transform: rotate(-30deg); } }
+  @keyframes wave-r { from { transform: rotate(-10deg); } to { transform: rotate(30deg); } }
+  .flock { position: absolute; z-index: 3; pointer-events: none; border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #fff, #f3ebe2 70%); box-shadow: 0 0 3px rgba(255,255,255,.8);
+    animation: flockfall var(--t) cubic-bezier(.3,0,.8,.6) forwards; }
+  @keyframes flockfall { 0% { transform: translate(0,0); opacity: 0; } 12% { opacity: 1; } 85% { opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)); opacity: 0; } }
+  /* Titel glänzt beim Antippen */
+  .title h1 { cursor: pointer; -webkit-tap-highlight-color: transparent; pointer-events: auto; }
+  .title h1.shine { animation: shine 1.4s ease-out; }
+  @keyframes shine { 0% { filter: none; } 25% { filter: brightness(1.18) drop-shadow(0 0 .6em rgba(255,236,190,.95)); }
+    100% { filter: none; } }
+  .twinkle { position: absolute; pointer-events: none; z-index: 3; transform: translate(-50%,-50%) scale(0);
+    animation: twinkle-pop 1.2s ease-out forwards; }
+  .twinkle svg { display: block; width: 100%; height: 100%;
+    filter: drop-shadow(0 0 3px #fff) drop-shadow(0 0 8px rgba(255,230,170,.9)); }
+  @keyframes twinkle-pop { 0% { transform: translate(-50%,-50%) scale(0) rotate(0); opacity: 0; }
+    30% { transform: translate(-50%,-50%) scale(1.1) rotate(25deg); opacity: 1; }
+    100% { transform: translate(-50%,-50%) scale(.2) rotate(70deg); opacity: 0; } }
   .hint { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 28px);
     transform: translateX(-50%) translateY(20px); opacity: 0; transition: all .4s ease;
     background: #f2e3cb; color: #3a2414; font-family: 'EB Garamond', Georgia, serif; font-size: 18px;
@@ -249,7 +276,6 @@
   <img id="house" alt="Lebkuchenhaus">
   <div class="title" id="top">
     <h1>Adventskalender</h1>
-    <img class="sprig" src="zierde.png" alt="">
   </div>
   <div class="wrap" id="wrap" style="position:absolute; inset:0;">
     <div class="glow" id="glow"></div>
@@ -326,6 +352,7 @@ const LAYOUTS = {
     img: 'haus-voll.jpg', W: 1199, H: 2702, OFF: 790,
     win: [11, 9.5 * 1312 / 2702], win24: [16, 13 * 1312 / 2702],
     glow: [16, 13 * 1312 / 2702], glow24: [22, 17 * 1312 / 2702],
+    anim: {"tree": [0, 809, 203, 431], "treeHole": [0, 806, 206, 437], "treePivot": [60.400000000000006, 1226.6], "armL": [1015, 1052, 47, 54], "armR": [1131, 1057, 60, 55], "armHole": [1013, 1051, 180, 63], "pivL": [1054.3, 1096.12], "pivR": [1139.8, 1104.1], "face": [1066, 1027, 50, 52]},
     snowman: [1098, 1080, 165, 250], mouth: [1075, 1040], tree: [92, 1010, 185, 390], treeTop: [95, 900], lamps: [[445, 1095, 70, 110], [754, 1083, 70, 110]], chimney: [875, 150, 170, 210], smoke: [878, 45], heart: { c: [598, 206], s: [108, 100], hs: [116, 108], img: 'handy' }, fences: [{"slats": [[107.5, 1167.5, 23], [157.5, 1167.5, 29], [200.5, 1167.5, 29], [243.5, 1167.5, 31]], "patch": [177.5, 1167.5, 171]}, {"slats": [[923.5, 1168.0, 31], [966.5, 1168.0, 31], [1003.5, 1168.0, 31]], "patch": [963.5, 1168.0, 119]}], drift: [[5, 35], [1.3, 2.1]],
     windows: {
       1:[365,370], 2:[518,370], 3:[683,370], 4:[835,370],
@@ -344,6 +371,7 @@ const LAYOUTS = {
   pc: {
     img: 'haus-pc.jpg', W: 1672, H: 941, OFF: 0,
     win: [6.3, 10.1], win24: [9, 20], glow: [9, 15], glow24: [13, 25],
+    anim: {"tree": [293, 550, 222, 334], "treeHole": [290, 547, 228, 340], "treePivot": [403.9, 871.6], "armL": [1154, 732, 45, 50], "armR": [1261, 736, 57, 52], "armHole": [1152, 730, 168, 59], "pivL": [1190.75, 772.4], "pivR": [1269.5, 779.75], "face": [1202, 708, 45, 49]},
     snowman: [1232, 765, 150, 225], mouth: [1212, 720], tree: [410, 715, 180, 300], treeTop: [440, 600], lamps: [[717, 779, 70, 95], [958, 774, 70, 95]], chimney: [1045, 135, 135, 195], smoke: [1045, 55], heart: { c: [834.5, 149], s: [81, 76], hs: [89, 84], img: 'pc' }, fences: [{"slats": [[447.5, 835.5, 29], [487.5, 835.5, 29], [522.5, 835.5, 29], [560.5, 835.5, 29]], "patch": [504.0, 835.5, 150]}, {"slats": [[1075.5, 832.5, 29], [1113.5, 832.5, 31], [1151.5, 832.5, 31]], "patch": [1114.0, 832.5, 114]}], drift: [[90, 170], [0.2, 0.45]],
     windows: {
       1:[665,268], 2:[778,268], 3:[893,268], 4:[1005,268],
@@ -432,7 +460,7 @@ findImage().then(src => {
     });
 
     // Schneemann und Tanne zum Antippen: sie sagen etwas
-    function talker(label, box, anchor, html, side) {
+    function talker(label, box, anchor, html, side, onTap) {
       const [cx, cy, w, h] = box, [l, t] = px(cx, cy);
       const btn = document.createElement('button');
       btn.className = 'snowman'; btn.setAttribute('aria-label', label);
@@ -448,12 +476,72 @@ findImage().then(src => {
         document.querySelectorAll('.bubble.show').forEach(o => o !== bubble && o.classList.remove('show'));
         bubble.classList.remove('show'); void bubble.offsetWidth; bubble.classList.add('show');
         clearTimeout(timer); timer = setTimeout(() => bubble.classList.remove('show'), 4200);
+        if (onTap) onTap();
       };
     }
+    // Teile aus dem Bild selbst: nur sichtbar, solange sie sich bewegen
+    const IM = PC ? 'pc' : 'handy', AN = L.anim;
+    const cut = (src, cls, b, pivot) => {
+      const e = document.createElement('img'); e.src = src; e.alt = ''; e.className = 'cut ' + cls;
+      e.style.left = (b[0] / L.W * 100) + '%'; e.style.top = ((b[1] + L.OFF) / L.H * 100) + '%';
+      e.style.width = (b[2] / L.W * 100) + '%'; e.style.height = (b[3] / L.H * 100) + '%';
+      if (pivot) e.style.transformOrigin = ((pivot[0] - b[0]) / b[2] * 100) + '% ' + ((pivot[1] - b[1]) / b[3] * 100) + '%';
+      wrap.appendChild(e); return e;
+    };
+    const treeHole = cut(IM + '-tanne-loch.png', '', AN.treeHole);
+    const treeCut = cut(IM + '-tanne.png', 'cut-tree', AN.tree, AN.treePivot);
+    const armHole = cut(IM + '-arm-loch.png', '', AN.armHole);
+    const armL = cut(IM + '-arm-l.png', 'cut-arm-l', AN.armL, AN.pivL);
+    const armR = cut(IM + '-arm-r.png', 'cut-arm-r', AN.armR, AN.pivR);
+    const scared = cut(IM + '-angst.png', '', AN.face);
+    const restart = (...els) => els.forEach(e => { e.classList.remove('on'); void e.offsetWidth; e.classList.add('on'); });
+    let treeT, smT;
+    const shake = () => {
+      restart(treeHole, treeCut);
+      clearTimeout(treeT); treeT = setTimeout(() => { treeHole.classList.remove('on'); treeCut.classList.remove('on'); }, 1150);
+      // Schnee rieselt von den Zweigen
+      const [bx, by, bw, bh] = AN.tree, scale = wrap.clientWidth / L.W;
+      for (let i = 0; i < 16; i++) {
+        setTimeout(() => {
+          const f = document.createElement('div'); f.className = 'flock';
+          const sz = (2 + Math.random() * 3.5) * Math.max(1, scale * 1.6);
+          const ry = Math.random() * 0.75, half = 0.12 + ry * 0.4;
+          const [l, t] = px(bx + bw * (0.5 + (Math.random() * 2 - 1) * half), by + bh * (0.08 + ry * 0.8));
+          f.style.left = l + '%'; f.style.top = t + '%'; f.style.width = f.style.height = sz + 'px';
+          f.style.setProperty('--dx', ((Math.random() - .5) * 30) + 'px');
+          f.style.setProperty('--dy', (bh * scale * (0.25 + Math.random() * 0.35)) + 'px');
+          f.style.setProperty('--t', (0.9 + Math.random() * 0.8).toFixed(2) + 's');
+          wrap.appendChild(f); f.addEventListener('animationend', () => f.remove());
+        }, Math.random() * 600);
+      }
+    };
+    const scare = () => {
+      restart(armHole, armL, armR, scared);
+      clearTimeout(smT); smT = setTimeout(() => [armHole, armL, armR, scared].forEach(e => e.classList.remove('on')), 3200);
+    };
+
     talker('Schneemann', L.snowman, [L.mouth[0] - 18, L.mouth[1] - 30],
-      'Ich spür’ meine Beine nicht.<br>Ich kann meine Beine nicht spüren!!', 'left');
+      'Ich spür’ meine Beine nicht.<br>Ich kann meine Beine nicht spüren!!', 'left', scare);
     talker('Tanne', L.tree, L.treeTop,
-      'Und wer ist der funky aussehende<br>Esel da drüben?', 'right');
+      'Und wer ist der funky aussehende<br>Esel da drüben?', 'right', shake);
+
+    // Titel glänzt beim Antippen
+    const h1 = document.querySelector('.title h1');
+    h1.onclick = () => {
+      h1.classList.remove('shine'); void h1.offsetWidth; h1.classList.add('shine');
+      const r = h1.getBoundingClientRect(), host = document.getElementById('scene'), hr = host.getBoundingClientRect();
+      for (let i = 0; i < 9; i++) {
+        setTimeout(() => {
+          const t = document.createElement('div'); t.className = 'twinkle';
+          const sz = r.height * (0.25 + Math.random() * 0.3);
+          t.style.width = t.style.height = sz + 'px';
+          t.style.left = (r.left - hr.left + r.width * (0.03 + Math.random() * 0.94)) + 'px';
+          t.style.top = (r.top - hr.top + r.height * (0.1 + Math.random() * 0.8)) + 'px';
+          t.innerHTML = STAR; host.appendChild(t);
+          t.addEventListener('animationend', () => t.remove());
+        }, i * 90);
+      }
+    };
 
     // Laternen leuchten beim Antippen kurz heller
     L.lamps.forEach(([cx, cy, w, h], i) => {
