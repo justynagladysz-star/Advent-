@@ -90,7 +90,7 @@
     position: absolute; z-index: 4; transform: translate(-100%, -100%) scale(.4); transform-origin: 100% 100%;
     opacity: 0; pointer-events: none; transition: transform .35s cubic-bezier(.3,1.6,.5,1), opacity .25s;
     background: #f6eee4; color: #6b3b19; white-space: nowrap;
-    font-family: 'Zuckerguss', cursive; font-weight: 700; font-size: clamp(16px, 4.6vw, 26px); line-height: 1;
+    font-family: 'Zuckerguss', cursive; font-weight: 700; font-size: clamp(15px, 4.2vw, 24px); line-height: 1.25; text-align: center;
     padding: .55em .85em .6em; border-radius: 1.2em 1.2em .25em 1.2em;
     border: 2.5px solid #fffaf3;
     box-shadow: 0 5px 12px rgba(60,25,5,.4), inset 0 -3px 0 rgba(201,170,136,.45);
@@ -372,14 +372,14 @@ findImage().then(src => {
     sm.style.left = sl + '%'; sm.style.top = st + '%';
     sm.style.width = (sw / L.W * 100) + '%'; sm.style.height = (shh / L.H * 100) + '%';
     const bubble = document.createElement('div');
-    bubble.className = 'bubble'; bubble.textContent = 'Snowy, snowy Christmas!';
+    bubble.className = 'bubble'; bubble.innerHTML = 'Ich spür’ meine Beine nicht.<br>Ich kann meine Beine nicht spüren!!';
     const [bl, bt] = px(L.mouth[0] - 18, L.mouth[1] - 30);
     bubble.style.left = bl + '%'; bubble.style.top = bt + '%';
     wrap.appendChild(bubble); wrap.appendChild(sm);
     let bubbleTimer;
     sm.onclick = () => {
       bubble.classList.remove('show'); void bubble.offsetWidth; bubble.classList.add('show');
-      clearTimeout(bubbleTimer); bubbleTimer = setTimeout(() => bubble.classList.remove('show'), 2800);
+      clearTimeout(bubbleTimer); bubbleTimer = setTimeout(() => bubble.classList.remove('show'), 4200);
     };
 
     // Sticker gescannt: dieses Türchen öffnet sich sofort
