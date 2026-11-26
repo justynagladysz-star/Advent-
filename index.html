@@ -31,7 +31,7 @@
     font-family: 'Cormorant Garamond', serif; font-weight: 500;
     letter-spacing: .35em; font-size: clamp(18px, 5.5vw, 26px); margin: 0 0 6px; padding-left: .35em;
   }
-  .top .sprig { width: 150px; opacity: .9; }
+  .top .sprig { width: min(190px, 50vw); display: block; margin-top: 4px; }
   .wrap { position: relative; width: 100%; }
   .wrap img { width: 100%; display: block; }
   .bottom {
@@ -137,11 +137,7 @@
 <div class="page" id="page" style="visibility:hidden">
   <div class="top" id="top">
     <h1>ADVENTSKALENDER</h1>
-    <svg class="sprig" viewBox="0 0 150 20" fill="none" stroke="#fdf6ea" stroke-width="1.2" stroke-linecap="round">
-      <path d="M0 10 H45 M105 10 H150"/>
-      <path d="M55 10 H95"/>
-      <path d="M62 10 l6 -6 M62 10 l6 6 M72 10 l6 -6 M72 10 l6 6 M82 10 l6 -6 M82 10 l6 6"/>
-    </svg>
+    <img class="sprig" src="zierde.png" alt="">
   </div>
   <div class="wrap" id="wrap">
     <img id="house" alt="Lebkuchenhaus">
