@@ -49,11 +49,14 @@
     animation: twinkle var(--d, 2.4s) ease-in-out var(--delay, 0s) infinite;
   }
   .star svg { width: 100%; height: 100%; display: block;
-    filter: drop-shadow(0 0 4px rgba(255,255,255,.9)) drop-shadow(0 0 8px rgba(255,240,200,.6)); }
+    filter: drop-shadow(0 0 3px #fff) drop-shadow(0 0 8px rgba(255,236,180,.95)) drop-shadow(0 0 16px rgba(255,210,120,.7)); }
+  .star::before { content: ""; position: absolute; inset: -60%; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,240,200,.55), rgba(255,220,150,.15) 40%, transparent 70%); }
   @keyframes twinkle {
-    0%, 100% { opacity: .15; transform: translate(-50%,-50%) scale(.7) rotate(0deg); }
-    50%      { opacity: 1;   transform: translate(-50%,-50%) scale(1.1) rotate(15deg); }
+    0%, 100% { opacity: .55; transform: translate(-50%,-50%) scale(.85) rotate(0deg); }
+    50%      { opacity: 1;   transform: translate(-50%,-50%) scale(1.25) rotate(20deg); }
   }
+  #snow { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; }
 
   /* ---------- Leuchtendes Fenster ---------- */
   .glow {
@@ -81,7 +84,7 @@
 
   /* ---------- Nachricht ---------- */
   .overlay {
-    position: fixed; inset: 0; display: none; overflow-y: auto;
+    position: fixed; inset: 0; z-index: 6; display: none; overflow-y: auto;
     background:
       radial-gradient(circle at 50% 30%, rgba(255,220,170,.12), transparent 60%),
       radial-gradient(circle at 50% 100%, rgba(0,0,0,.25), transparent 60%),
@@ -146,6 +149,7 @@
   <div class="bottom"></div>
 </div>
 
+<canvas id="snow"></canvas>
 <div class="hint" id="hint"></div>
 
 <div class="overlay" id="overlay">
@@ -320,6 +324,57 @@ function openCard(d) {
   overlay.scrollTop = 0;
 }
 document.getElementById('close').onclick = () => overlay.classList.remove('show');
+
+/* ---------- Fallender Schnee ---------- */
+(function () {
+  const c = document.getElementById('snow'), ctx = c.getContext('2d');
+  let W, H, flakes = [];
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  function resize() {
+    W = innerWidth; H = innerHeight;
+    c.width = W * dpr; c.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function make(top) {
+    const crystal = Math.random() < 0.22;
+    return {
+      x: Math.random() * W, y: top ? -20 : Math.random() * H,
+      r: crystal ? 4 + Math.random() * 4 : 1 + Math.random() * 2.6,
+      vy: 0.35 + Math.random() * 0.9, sway: 0.4 + Math.random() * 1.2,
+      phase: Math.random() * 6.28, spin: (Math.random() - .5) * 0.02, rot: Math.random() * 6.28,
+      a: 0.55 + Math.random() * 0.45, crystal
+    };
+  }
+  function drawCrystal(f) {
+    ctx.save(); ctx.translate(f.x, f.y); ctx.rotate(f.rot);
+    ctx.strokeStyle = 'rgba(255,255,255,' + f.a + ')'; ctx.lineWidth = 1.1; ctx.lineCap = 'round';
+    for (let i = 0; i < 6; i++) {
+      ctx.rotate(Math.PI / 3);
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -f.r);
+      ctx.moveTo(0, -f.r * .55); ctx.lineTo(-f.r * .28, -f.r * .8);
+      ctx.moveTo(0, -f.r * .55); ctx.lineTo(f.r * .28, -f.r * .8);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function tick(t) {
+    ctx.clearRect(0, 0, W, H);
+    for (const f of flakes) {
+      f.y += f.vy; f.x += Math.sin(t / 1600 + f.phase) * f.sway * 0.35; f.rot += f.spin;
+      if (f.y > H + 10) Object.assign(f, make(true));
+      if (f.crystal) drawCrystal(f);
+      else {
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, 6.28);
+        ctx.fillStyle = 'rgba(255,255,255,' + f.a + ')'; ctx.shadowColor = '#fff'; ctx.shadowBlur = 4;
+        ctx.fill(); ctx.shadowBlur = 0;
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+  resize(); addEventListener('resize', resize);
+  const n = Math.round(Math.min(110, W * H / 6000));
+  for (let i = 0; i < n; i++) flakes.push(make(false));
+  requestAnimationFrame(tick);
+})();
 </script>
 </body>
 </html>
