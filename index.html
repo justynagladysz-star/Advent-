@@ -57,11 +57,12 @@
     animation: twinkle var(--d, 2.4s) ease-in-out var(--delay, 0s) infinite; will-change: transform, opacity;
   }
   .star svg { position: relative; width: 100%; height: 100%; display: block; }
-  .star::before { content: ""; position: absolute; inset: -70%; border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,255,255,.9) 0, rgba(255,240,200,.6) 14%, rgba(255,220,150,.22) 38%, transparent 68%); }
+  .star::before { content: ""; position: absolute; inset: -45%; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,250,238,.55) 0, rgba(255,238,205,.18) 30%, transparent 62%); }
+  .star.dot::before { inset: -120%; }
   @keyframes twinkle {
-    0%, 100% { opacity: .55; transform: translate(-50%,-50%) scale(.85) rotate(0deg); }
-    50%      { opacity: 1;   transform: translate(-50%,-50%) scale(1.25) rotate(20deg); }
+    0%, 100% { opacity: .25; transform: translate(-50%,-50%) scale(.8); }
+    50%      { opacity: .95; transform: translate(-50%,-50%) scale(1.05); }
   }
   /* gemalte Schneeflocken und Sterne glänzen selbst: weicher Schimmer genau auf der Flocke, ohne Stern darüber */
   .glint { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none;
@@ -421,24 +422,25 @@ const px = (x, y) => [x / L.W * 100, (y + L.OFF) / L.H * 100];
 // Wechselt jemand zwischen hochkant und quer, Seite neu laden
 addEventListener('resize', () => { if ((innerWidth / innerHeight > 1.05) !== PC) location.reload(); });
 
-const STAR = `<svg viewBox="0 0 40 40"><path d="M20 0 C21 14 26 19 40 20 C26 21 21 26 20 40 C19 26 14 21 0 20 C14 19 19 14 20 0 Z" fill="#fffaf0"/></svg>`;
+const STAR = `<svg viewBox="0 0 40 40"><path d="M20 0 C20.6 15 25 19.4 40 20 C25 20.6 20.6 25 20 40 C19.4 25 15 20.6 0 20 C15 19.4 19.4 15 20 0 Z" fill="#fffaf3"/></svg>`;
+const DOTSTAR = `<svg viewBox="0 0 10 10"><circle cx="5" cy="5" r="2.2" fill="#fffaf3"/></svg>`;
 
-function addStar(parent, leftPct, topPct, sizePx) {
+function addStar(parent, leftPct, topPct, sizePx, dot) {
   const s = document.createElement('div');
-  s.className = 'star';
+  s.className = 'star' + (dot ? ' dot' : '');
   s.style.left = leftPct + '%';
   s.style.top = topPct + '%';
   s.style.width = s.style.height = sizePx + 'px';
   s.style.setProperty('--d', (1.8 + Math.random() * 2.2).toFixed(2) + 's');
   s.style.setProperty('--delay', (-Math.random() * 3).toFixed(2) + 's');
-  s.innerHTML = STAR;
+  s.innerHTML = dot ? DOTSTAR : STAR;
   parent.appendChild(s);
 }
 
 ['karte-lebkuchen.webp','schnee.jpg', (PC ? 'pc' : 'handy') + '-herz.png', (PC ? 'pc' : 'handy') + '-herz-loch.png'].forEach(u => { const i = new Image(); i.src = u; });
 
 const REPO = 'justynagladysz-star/Advent-';
-const V = '?v=41';   // neue Nummer = Browser lädt die Bilder frisch
+const V = '?v=42';   // neue Nummer = Browser lädt die Bilder frisch
 async function findImage() {
   return L.img + V;
 }
@@ -468,10 +470,18 @@ findImage().then(src => {
       wrap.appendChild(g);
     });
     // zusätzliche Sterne oben im Himmel (Handy)
-    if (!PC) for (let i = 0; i < 14; i++) {
-      let y = 2 + Math.random() * 26;
-      if (y > 9 && y < 22) y = Math.random() < .5 ? 3 + Math.random() * 6 : 22 + Math.random() * 6;
-      addStar(wrap, 4 + Math.random() * 92, y, 6 + Math.random() * 12);
+    // viele feine Sterne und Pünktchen im Himmel (nicht auf dem Haus und nicht auf dem Titel)
+    const sky = PC
+      ? (x, y) => (x < 24 || x > 76 ? y < 82 : (x < 37 || x > 63 ? y < 18 : y < 3)) && !(x < 31 && y > 4 && y < 20)
+      : (x, y) => y < 30 && !(y > 9 && y < 22) || (y >= 30 && y < 55 && (x < 3 || x > 97));
+    let placed = 0, tries = 0;
+    const want = PC ? 85 : 45;
+    while (placed < want && tries++ < 2000) {
+      const x = Math.random() * 100, y = Math.random() * (PC ? 85 : 55);
+      if (!sky(x, y)) continue;
+      const dot = Math.random() < .55;
+      addStar(wrap, x, y, dot ? 3 + Math.random() * 3 : 6 + Math.random() * 7, dot);
+      placed++;
     }
 
     // Fenster, deren Tag noch nicht da ist, sind geschlossen
@@ -909,10 +919,10 @@ placeScene();
     const crystal = false, depth = Math.random();
     return {
       x: Math.random() * W, y: top ? -20 : Math.random() * H,
-      r: 1.6 + depth * depth * 4.2,
+      r: 0.8 + depth * depth * 2.6,
       vy: 0.35 + Math.random() * 0.9, sway: 0.4 + Math.random() * 1.2,
       phase: Math.random() * 6.28, spin: (Math.random() - .5) * 0.02, rot: Math.random() * 6.28,
-      a: 0.35 + Math.random() * 0.45, crystal
+      a: 0.25 + Math.random() * 0.45, crystal
     };
   }
   let last = 0;
@@ -934,7 +944,7 @@ placeScene();
     requestAnimationFrame(tick);
   }
   resize(); addEventListener('resize', resize);
-  const n = Math.round(Math.min(innerWidth < 700 ? 60 : 110, W * H / 6000));
+  const n = Math.round(Math.min(innerWidth < 700 ? 95 : 170, W * H / 3800));
   for (let i = 0; i < n; i++) flakes.push(make(false));
   requestAnimationFrame(tick);
 })();
