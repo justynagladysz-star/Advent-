@@ -6,38 +6,41 @@
 <title>Adventskalender</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Serif+SC:wght@400&display=swap" rel="stylesheet">
 <style>
+  @font-face { font-family: 'Zuckerguss'; src: url('titel-schrift.woff2') format('woff2'); font-weight: 700; font-display: block; }
   * { box-sizing: border-box; }
   body, h1, h2, .text, .hint { font-variant-numeric: lining-nums; font-feature-settings: 'lnum' 1; }
   html, body { margin: 0; height: 100%; }
   body {
-    min-height: 100dvh;
+    height: 100dvh; overflow: hidden;
     background: #b0784c;
     font-family: 'EB Garamond', Georgia, serif;
-    overflow-x: hidden;
   }
 
   /* ---------- Kalender, bildschirmfüllend ---------- */
-  .page {
-    min-height: 100dvh; max-width: 640px; margin: 0 auto;
-    display: flex; flex-direction: column;
+  .scene {
+    position: absolute; left: 50%; top: 0; transform: translateX(-50%);
+    width: max(100vw, calc(100dvh * 1199 / 2702)); aspect-ratio: 1199 / 2702;
+    container-type: inline-size;
   }
-  .top {
-    position: relative; flex: 1; min-height: 70px;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: calc(env(safe-area-inset-top) + 14px) 16px 8px;
-    color: #fdf6ea;
+  @media (min-aspect-ratio: 3/5) { .scene { width: calc(100dvh * 1199 / 2702); } }
+  .scene > img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .title {
+    position: absolute; left: 0; right: 0; top: 11.5%; z-index: 2;
+    display: flex; flex-direction: column; align-items: center;
   }
-  .top h1 {
-    font-family: 'Cormorant Garamond', serif; font-weight: 500;
-    letter-spacing: .35em; font-size: clamp(18px, 5.5vw, 26px); margin: 0 0 6px; padding-left: .35em;
+  .title h1 {
+    font-family: 'Zuckerguss', cursive; font-weight: 700; font-size: 15cqw; line-height: 1;
+    margin: 0; color: #fffaf3; letter-spacing: .01em;
+    -webkit-text-stroke: .25cqw rgba(255,255,255,.55);
+    text-shadow:
+      0 -.15cqw 0 #ffffff,
+      0 .25cqw 0 #f1e6d8,
+      0 .5cqw 0 #e2d0bb,
+      0 .75cqw .1cqw #c9aa88,
+      0 1.2cqw 1.6cqw rgba(70,35,10,.55),
+      0 0 3cqw rgba(255,240,215,.35);
   }
-  .top .sprig { width: min(190px, 50vw); display: block; margin-top: 4px; }
-  .wrap { position: relative; width: 100%; }
-  .wrap img { width: 100%; display: block; }
-  .bottom {
-    flex: 1; min-height: 20px;
-    background: linear-gradient(#cda382, #c49872);
-  }
+  .title .sprig { width: 44cqw; display: block; margin-top: 3cqw; }
   .loading {
     position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
     color: #fdf6ea; letter-spacing: .3em; font-family: 'Cormorant Garamond', serif;
@@ -134,16 +137,15 @@
 
 <div class="loading" id="loading">ADVENTSKALENDER</div>
 
-<div class="page" id="page" style="visibility:hidden">
-  <div class="top" id="top">
-    <h1>ADVENTSKALENDER</h1>
+<div class="scene" id="scene" style="visibility:hidden">
+  <img id="house" alt="Lebkuchenhaus">
+  <div class="title" id="top">
+    <h1>Adventskalender</h1>
     <img class="sprig" src="zierde.png" alt="">
   </div>
-  <div class="wrap" id="wrap">
-    <img id="house" alt="Lebkuchenhaus">
+  <div class="wrap" id="wrap" style="position:absolute; inset:0;">
     <div class="glow" id="glow"></div>
   </div>
-  <div class="bottom"></div>
 </div>
 
 <canvas id="snow"></canvas>
@@ -200,7 +202,8 @@ const messages = {
 };
 
 /* Positionen auf dem Bild (Bildgröße 1199 x 1312) */
-const IMG_W = 1199, IMG_H = 1312;
+const IMG_W = 1199, IMG_H = 2702, OFF = 790;   // Haus beginnt 790px unter dem oberen Bildrand
+const HS = 1312 / 2702;                          // Höhen-Umrechnung
 const windows = {
   1:[365,370], 2:[518,370], 3:[683,370], 4:[835,370],
   5:[288,515], 6:[447,515], 7:[602,515], 8:[762,515], 9:[916,515],
@@ -234,7 +237,7 @@ function addStar(parent, leftPct, topPct, sizePx) {
 
 const REPO = 'justynagladysz-star/Advent-';
 async function findImage() {
-  return 'F17DF16F-3DCF-49F9-9B25-305AD192F103.png';
+  return 'haus-voll.jpg';
 }
 
 const day = parseInt(new URLSearchParams(location.search).get('tag'), 10);
@@ -247,16 +250,17 @@ findImage().then(src => {
   house.src = src;
   house.onload = () => {
     document.getElementById('loading').style.display = 'none';
-    document.getElementById('page').style.visibility = 'visible';
+    document.getElementById('scene').style.visibility = 'visible';
 
     // Sterne auf dem Bild funkeln lassen
     const scale = wrap.clientWidth / IMG_W;
     imageStars.forEach(([x, y, size]) =>
-      addStar(wrap, x / IMG_W * 100, y / IMG_H * 100, Math.max(8, size * scale * 0.7)));
+      addStar(wrap, x / IMG_W * 100, (y + OFF) / IMG_H * 100, Math.max(8, size * scale * 0.7)));
     // zusätzliche Sterne oben im Himmel
-    const top = document.getElementById('top');
-    for (let i = 0; i < 9; i++) {
-      addStar(top, 5 + Math.random() * 90, 10 + Math.random() * 80, 6 + Math.random() * 10);
+    for (let i = 0; i < 14; i++) {
+      let y = 2 + Math.random() * 26;
+      if (y > 9 && y < 22) y = Math.random() < .5 ? 3 + Math.random() * 6 : 22 + Math.random() * 6;
+      addStar(wrap, 4 + Math.random() * 92, y, 6 + Math.random() * 12);
     }
 
     // Fenster zum Antippen
@@ -266,9 +270,9 @@ findImage().then(src => {
       b.className = 'hit' + (d <= unlockedUpTo() ? '' : ' locked');
       b.setAttribute('aria-label', 'Türchen ' + d);
       b.style.left = (x / IMG_W * 100) + '%';
-      b.style.top = (y / IMG_H * 100) + '%';
+      b.style.top = ((y + OFF) / IMG_H * 100) + '%';
       b.style.width = (big ? 16 : 11) + '%';
-      b.style.height = (big ? 13 : 9.5) + '%';
+      b.style.height = ((big ? 13 : 9.5) * HS) + '%';
       b.onclick = () => tapDoor(d, b);
       wrap.appendChild(b);
     });
@@ -295,9 +299,9 @@ function openDoor(d) {
   const [x, y] = windows[d], big = d === 24;
   glow.classList.remove('on'); void glow.offsetWidth;
   glow.style.left = (x / IMG_W * 100) + '%';
-  glow.style.top = (y / IMG_H * 100) + '%';
+  glow.style.top = ((y + OFF) / IMG_H * 100) + '%';
   glow.style.width = (big ? 18 : 12) + '%';
-  glow.style.height = (big ? 14 : 10) + '%';
+  glow.style.height = ((big ? 14 : 10) * HS) + '%';
   setTimeout(() => glow.classList.add('on'), 300);
   setTimeout(() => { openCard(d); busy = false; }, 2800);
 }
@@ -321,6 +325,15 @@ function openCard(d) {
   overlay.scrollTop = 0;
 }
 document.getElementById('close').onclick = () => overlay.classList.remove('show');
+
+/* ---------- Bild an den Bildschirm anpassen ---------- */
+function placeScene() {
+  const sc = document.getElementById('scene');
+  const extra = sc.offsetHeight - innerHeight;          // so viel ist zu hoch
+  sc.style.top = (extra > 0 ? -extra * 0.3 : -extra / 2) + 'px';
+}
+addEventListener('resize', placeScene);
+placeScene();
 
 /* ---------- Fallender Schnee ---------- */
 (function () {
