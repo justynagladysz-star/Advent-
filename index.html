@@ -99,12 +99,33 @@
   .overlay.show { display: flex; animation: fade .8s ease; }
   @keyframes fade { from { opacity: 0; } }
   .close {
-    position: fixed; top: calc(env(safe-area-inset-top) + 14px); right: 16px; z-index: 5;
-    width: 44px; height: 44px; border-radius: 50%;
-    border: 1.5px solid #fdf6ea; background: none; color: #fdf6ea;
-    font-size: 22px; line-height: 1; cursor: pointer;
+    position: fixed; top: calc(env(safe-area-inset-top) + 12px); right: 14px; z-index: 5;
+    width: 52px; height: 52px; padding: 0; border: 0; border-radius: 50%; cursor: pointer;
+    background: url('karte-lebkuchen.webp') 50% 50% / 1100% auto;
+    box-shadow: 0 5px 10px rgba(50,22,5,.45), inset 0 -3px 5px rgba(60,25,5,.35), inset 0 2px 3px rgba(255,220,170,.35);
+    -webkit-tap-highlight-color: transparent; transition: transform .2s;
+  }
+  .close:active { transform: scale(.92); }
+  .close svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 1.5px 1px rgba(60,25,5,.55)); }
+  .sparkles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+  .flake {
+    position: absolute; top: -40px;
+    animation: drift var(--fall) linear var(--delay) infinite;
+  }
+  .flake svg { display: block; width: 100%; height: 100%;
+    animation: sparkle var(--tw) ease-in-out var(--delay) infinite;
+    filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 6px rgba(255,240,205,.9)) drop-shadow(0 0 12px rgba(255,220,150,.6)); }
+  @keyframes drift {
+    from { transform: translate(0, 0) rotate(0deg); }
+    50%  { transform: translate(var(--sway), 55vh) rotate(90deg); }
+    to   { transform: translate(0, 112vh) rotate(180deg); }
+  }
+  @keyframes sparkle {
+    0%, 100% { opacity: .45; transform: scale(.85); }
+    50%      { opacity: 1;   transform: scale(1.15); }
   }
   .cardwrap {
+    position: relative; z-index: 1;
     container-type: inline-size;
     width: min(440px, 100%, calc((100dvh - 90px - env(safe-area-inset-top)) * 760 / 1129));
     filter: drop-shadow(0 14px 18px rgba(50,22,5,.45)) drop-shadow(0 2px 3px rgba(50,22,5,.35));
@@ -160,7 +181,16 @@
 <div class="hint" id="hint"></div>
 
 <div class="overlay" id="overlay">
-  <button class="close" id="close" aria-label="Schließen">✕</button>
+  <div class="sparkles" id="sparkles"></div>
+  <button class="close" id="close" aria-label="Schließen">
+    <svg viewBox="0 0 52 52" fill="none" stroke-linecap="round">
+      <circle cx="26" cy="26" r="21.5" stroke="#fffaf3" stroke-width="2" stroke-dasharray="0.1 4.6"/>
+      <circle cx="26" cy="26" r="18" stroke="#fffaf3" stroke-width="1.6"/>
+      <path d="M19 19 L33 33 M33 19 L19 33" stroke="#e9dccb" stroke-width="5.2" transform="translate(0 .8)"/>
+      <path d="M19 19 L33 33 M33 19 L19 33" stroke="#fffaf3" stroke-width="4.4"/>
+      <path d="M19.6 18.6 L25 24 M32.4 18.6 L28.5 22.5" stroke="#ffffff" stroke-width="1.4" opacity=".9"/>
+    </svg>
+  </button>
   <div class="cardwrap">
     <div class="card">
       <div class="inner" id="inner">
@@ -387,6 +417,28 @@ function placeScene() {
 }
 addEventListener('resize', placeScene);
 placeScene();
+
+/* ---------- Glitzernde Schneeflocken hinter der Karte ---------- */
+(function () {
+  const box = document.getElementById('sparkles');
+  const CRYSTAL = '<svg viewBox="-12 -12 24 24" fill="none" stroke="#fffaf3" stroke-width="1.3" stroke-linecap="round">' +
+    [0, 60, 120].map(r => '<g transform="rotate(' + r + ')"><path d="M0 -10 V10 M-3 -7 L0 -4.5 L3 -7 M-3 7 L0 4.5 L3 7"/></g>').join('') + '</svg>';
+  const SPARK = '<svg viewBox="0 0 40 40"><path d="M20 0 C21 14 26 19 40 20 C26 21 21 26 20 40 C19 26 14 21 0 20 C14 19 19 14 20 0 Z" fill="#fffaf0"/></svg>';
+  for (let i = 0; i < 34; i++) {
+    const f = document.createElement('div');
+    f.className = 'flake';
+    const crystal = Math.random() < 0.6, size = crystal ? 12 + Math.random() * 16 : 8 + Math.random() * 10;
+    f.style.left = (Math.random() * 100) + '%';
+    f.style.width = f.style.height = size + 'px';
+    const fall = 14 + Math.random() * 14;
+    f.style.setProperty('--fall', fall + 's');
+    f.style.setProperty('--delay', (-Math.random() * fall) + 's');
+    f.style.setProperty('--tw', (1.6 + Math.random() * 2) + 's');
+    f.style.setProperty('--sway', ((Math.random() - .5) * 60) + 'px');
+    f.innerHTML = crystal ? CRYSTAL : SPARK;
+    box.appendChild(f);
+  }
+})();
 
 /* ---------- Fallender Schnee ---------- */
 (function () {
