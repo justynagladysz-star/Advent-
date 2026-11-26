@@ -195,25 +195,26 @@
     font-family: 'Zuckerguss', cursive; font-weight: 700; line-height: 1; white-space: nowrap;
     color: #f3ddc9; opacity: .93; font-variant-numeric: lining-nums; filter: blur(.012em);
     text-shadow: 0 0 .05em rgba(250,232,214,.75), 0 .03em .03em rgba(214,186,160,.9), 0 .06em .08em rgba(80,40,12,.45); }
-  /* geschlossene Fenster: zwei kleine Lebkuchen-Türchen im Fensterrahmen, die nach außen aufschwingen */
-  .zu { position: absolute; z-index: 1; pointer-events: none; display: flex; perspective: 220px; }
-  .zu > i { height: 100%; background-repeat: no-repeat; backface-visibility: hidden; will-change: transform;
-    transition: transform 1.4s cubic-bezier(.35,.1,.25,1), opacity .5s ease-in .9s; }
-  .zu > i:first-child { transform-origin: 0 50%; }
-  .zu > i:last-child  { transform-origin: 100% 50%; }
-  .zu.open > i:first-child { transform: rotateY(-100deg); opacity: 0; }
-  .zu.open > i:last-child  { transform: rotateY(100deg); opacity: 0; }
-  .zu.shake > i:first-child { animation: rattleL .6s ease-in-out; }
-  .zu.shake > i:last-child  { animation: rattleR .6s ease-in-out; }
-  @keyframes rattleL { 0%,100% { transform: rotateY(0); } 15% { transform: rotateY(-14deg); } 35% { transform: rotateY(3deg); }
-    55% { transform: rotateY(-9deg); } 75% { transform: rotateY(2deg); } }
-  @keyframes rattleR { 0%,100% { transform: rotateY(0); } 15% { transform: rotateY(14deg); } 35% { transform: rotateY(-3deg); }
-    55% { transform: rotateY(9deg); } 75% { transform: rotateY(-2deg); } }
+  /* geschlossene Fenster (aus der Vorlage), öffnen sich wie zwei Flügel */
+  .zu { position: absolute; z-index: 1; pointer-events: none; display: flex; perspective: 260px; }
+  .zu > i { flex: 1; height: 100%; background-repeat: no-repeat; background-size: 200% 100%;
+    transition: transform 1s cubic-bezier(.45,.05,.3,1), opacity 1s ease-in; }
+  .zu > i:first-child { background-position: 0 0; transform-origin: 0 50%; }
+  .zu > i:last-child  { background-position: 100% 0; transform-origin: 100% 50%; }
+  .zu.open > i:first-child { transform: rotateY(-115deg); opacity: 0; }
+  .zu.open > i:last-child  { transform: rotateY(115deg); opacity: 0; }
+  .zu.shake { animation: zushake .6s ease-in-out; transform-origin: 50% 90%; }
+  @keyframes zushake {
+    0%, 100% { transform: translateX(0) rotate(0); }
+    12% { transform: translateX(-6%) rotate(-4deg); }  28% { transform: translateX(5%) rotate(3.5deg); }
+    44% { transform: translateX(-4%) rotate(-2.5deg); } 60% { transform: translateX(3%) rotate(1.8deg); }
+    76% { transform: translateX(-1.5%) rotate(-.8deg); } }
   .wnum.shake { animation: numshake .6s ease-in-out; }
   @keyframes numshake {
-    0%, 100% { transform: translate(-50%,-50%); } 15% { transform: translate(-50%,-50%) rotate(-5deg); }
-    35% { transform: translate(-50%,-50%) rotate(4deg); } 55% { transform: translate(-50%,-50%) rotate(-3deg); }
-    75% { transform: translate(-50%,-50%) rotate(1.5deg); } }
+    0%, 100% { transform: translate(-50%,-50%); }
+    12% { transform: translate(-62%,-50%) rotate(-4deg); }  28% { transform: translate(-40%,-50%) rotate(3.5deg); }
+    44% { transform: translate(-58%,-50%) rotate(-2.5deg); } 60% { transform: translate(-44%,-50%) rotate(1.8deg); }
+    76% { transform: translate(-53%,-50%) rotate(-.8deg); } }
   .hint { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 28px);
     transform: translateX(-50%) translateY(20px); opacity: 0; transition: all .4s ease;
     background: #f2e3cb; color: #3a2414; font-family: 'EB Garamond', Georgia, serif; font-size: 18px;
@@ -377,7 +378,7 @@ const PC = innerWidth / innerHeight > 1.05;
 if (PC) document.body.classList.add('pc');
 const LAYOUTS = {
   handy: {
-    img: 'haus-voll.jpg', zu: {"1": [315, 311, 97, 106, 0.505], "2": [470, 312, 97, 104, 0.505], "3": [634, 314, 99, 103, 0.505], "4": [790, 315, 91, 101, 0.484], "5": [237, 459, 101, 106, 0.495], "6": [399, 461, 95, 102, 0.516], "7": [555, 459, 95, 104, 0.505], "8": [713, 462, 109, 102, 0.45], "9": [867, 462, 96, 103, 0.5], "10": [230, 608, 101, 102, 0.515], "11": [397, 608, 95, 101, 0.484], "12": [556, 607, 96, 101, 0.5], "13": [714, 608, 96, 101, 0.5], "14": [869, 607, 121, 103, 0.43], "15": [230, 762, 97, 95, 0.505], "16": [397, 763, 96, 93, 0.5], "17": [561, 755, 96, 101, 0.5], "18": [717, 756, 94, 100, 0.511], "19": [878, 755, 99, 101, 0.505], "20": [224, 902, 100, 105, 0.51], "21": [384, 901, 95, 105, 0.484], "22": [739, 903, 97, 103, 0.485], "23": [894, 902, 119, 103, 0.42]}, nums: {"pos": {"1": [364.5, 364.5], "2": [519.0, 365.0], "3": [684.5, 366.5], "4": [834.5, 367.0], "5": [287.0, 514.5], "6": [448.0, 514.0], "7": [603.5, 514.5], "8": [762.0, 514.5], "9": [915.0, 515.0], "10": [282.0, 662.0], "11": [443.5, 660.0], "12": [604.0, 660.0], "13": [762.5, 660.0], "14": [921.0, 660.0], "15": [279.0, 808.0], "16": [445.0, 807.5], "17": [609.0, 808.0], "18": [765.0, 807.5], "19": [928.5, 808.0], "20": [275.0, 957.0], "21": [430.0, 955.5], "22": [786.5, 955.5], "23": [944.0, 955.0], "24": [610.0, 1055.0]}, "h": 43, "h24": 48}, W: 1199, H: 2702, OFF: 790,
+    img: 'haus-voll.jpg', zu: {"1": [287.6, 287.6, 154, 145], "2": [443.8, 289.8, 150, 142], "3": [610.0, 292.0, 149, 141], "4": [761.6, 294.1, 146, 138], "5": [212.5, 440.0, 149, 141], "6": [375.1, 441.1, 146, 138], "7": [530.0, 441.0, 147, 139], "8": [687.5, 440.0, 149, 141], "9": [842.1, 442.1, 146, 138], "10": [207.8, 587.8, 148, 140], "11": [369.3, 585.8, 148, 140], "12": [529.8, 585.8, 148, 140], "13": [688.3, 585.8, 148, 140], "14": [846.8, 585.8, 148, 140], "15": [204.8, 733.8, 148, 140], "16": [369.0, 731.5, 152, 143], "17": [532.2, 731.2, 154, 145], "18": [689.0, 731.5, 152, 143], "19": [853.3, 732.8, 150, 142], "20": [200.8, 882.8, 148, 140], "21": [357.6, 883.1, 145, 137], "22": [714.1, 883.1, 145, 137], "23": [869.8, 880.8, 148, 140]}, nums: {"pos": {"1": [364.5, 364.5], "2": [519.0, 365.0], "3": [684.5, 366.5], "4": [834.5, 367.0], "5": [287.0, 514.5], "6": [448.0, 514.0], "7": [603.5, 514.5], "8": [762.0, 514.5], "9": [915.0, 515.0], "10": [282.0, 662.0], "11": [443.5, 660.0], "12": [604.0, 660.0], "13": [762.5, 660.0], "14": [921.0, 660.0], "15": [279.0, 808.0], "16": [445.0, 807.5], "17": [609.0, 808.0], "18": [765.0, 807.5], "19": [928.5, 808.0], "20": [275.0, 957.0], "21": [430.0, 955.5], "22": [786.5, 955.5], "23": [944.0, 955.0], "24": [610.0, 1055.0]}, "h": 43, "h24": 48}, W: 1199, H: 2702, OFF: 790,
     win: [11, 9.5 * 1312 / 2702], win24: [16, 13 * 1312 / 2702],
     glow: [16, 13 * 1312 / 2702], glow24: [22, 17 * 1312 / 2702],
     anim: {"tree": [0, 809, 203, 431], "treeHole": [0, 806, 206, 437], "treePivot": [60.400000000000006, 1226.6], "armL": [1015, 1052, 47, 54], "armR": [1131, 1057, 60, 55], "armHole": [1013, 1051, 180, 63], "pivL": [1054.3, 1096.12], "pivR": [1139.8, 1104.1], "face": [1066, 1027, 50, 52]},
@@ -397,7 +398,7 @@ const LAYOUTS = {
     ]
   },
   pc: {
-    img: 'haus-pc.jpg', zu: {"1": [629, 227, 81, 76, 0.444], "2": [740, 228, 72, 75, 0.514], "3": [858, 228, 73, 75, 0.507], "4": [970, 229, 69, 73, 0.493], "5": [572, 332, 74, 75, 0.5], "6": [689, 333, 80, 73, 0.45], "7": [801, 332, 71, 74, 0.507], "8": [915, 333, 81, 73, 0.444], "9": [1027, 333, 82, 74, 0.439], "10": [568, 435, 74, 73, 0.514], "11": [687, 436, 81, 72, 0.432], "12": [801, 435, 82, 73, 0.451], "13": [916, 436, 71, 71, 0.507], "14": [1029, 435, 87, 73, 0.437], "15": [567, 538, 73, 72, 0.493], "16": [687, 539, 71, 71, 0.493], "17": [805, 538, 80, 73, 0.438], "18": [917, 539, 71, 72, 0.507], "19": [1034, 539, 72, 72, 0.514], "20": [564, 640, 83, 73, 0.446], "21": [678, 639, 80, 73, 0.438], "22": [930, 640, 71, 72, 0.507], "23": [1043, 640, 85, 73, 0.424]}, nums: {"pos": {"1": [665.0, 266.5], "2": [777.0, 266.5], "3": [895.0, 267.0], "4": [1004.5, 267.0], "5": [609.0, 371.0], "6": [725.0, 371.0], "7": [837.5, 371.5], "8": [951.5, 371.0], "9": [1063.0, 371.0], "10": [606.0, 474.0], "11": [722.5, 473.0], "12": [838.0, 473.0], "13": [952.0, 474.0], "14": [1067.0, 473.0], "15": [603.5, 576.0], "16": [722.5, 576.0], "17": [840.0, 576.5], "18": [953.5, 576.0], "19": [1071.0, 576.5], "20": [601.0, 678.0], "21": [713.0, 678.0], "22": [966.0, 678.0], "23": [1079.5, 678.0], "24": [839.5, 752.5]}, "h": 30, "h24": 35}, W: 1672, H: 941, OFF: 0,
+    img: 'haus-pc.jpg', zu: {"1": [612.0, 213.5, 106, 100], "2": [724.0, 213.5, 106, 100], "3": [842.0, 214.0, 106, 100], "4": [951.5, 214.0, 106, 100], "5": [556.0, 318.0, 106, 100], "6": [672.0, 318.0, 106, 100], "7": [784.5, 318.5, 106, 100], "8": [898.5, 318.0, 106, 100], "9": [1010.0, 318.0, 106, 100], "10": [553.0, 421.0, 106, 100], "11": [669.5, 420.0, 106, 100], "12": [785.0, 420.0, 106, 100], "13": [899.0, 421.0, 106, 100], "14": [1014.0, 420.0, 106, 100], "15": [550.5, 523.0, 106, 100], "16": [669.5, 523.0, 106, 100], "17": [787.0, 523.5, 106, 100], "18": [900.5, 523.0, 106, 100], "19": [1018.0, 523.5, 106, 100], "20": [548.0, 625.0, 106, 100], "21": [660.0, 625.0, 106, 100], "22": [913.0, 625.0, 106, 100], "23": [1026.5, 625.0, 106, 100]}, nums: {"pos": {"1": [665.0, 266.5], "2": [777.0, 266.5], "3": [895.0, 267.0], "4": [1004.5, 267.0], "5": [609.0, 371.0], "6": [725.0, 371.0], "7": [837.5, 371.5], "8": [951.5, 371.0], "9": [1063.0, 371.0], "10": [606.0, 474.0], "11": [722.5, 473.0], "12": [838.0, 473.0], "13": [952.0, 474.0], "14": [1067.0, 473.0], "15": [603.5, 576.0], "16": [722.5, 576.0], "17": [840.0, 576.5], "18": [953.5, 576.0], "19": [1071.0, 576.5], "20": [601.0, 678.0], "21": [713.0, 678.0], "22": [966.0, 678.0], "23": [1079.5, 678.0], "24": [839.5, 752.5]}, "h": 30, "h24": 35}, W: 1672, H: 941, OFF: 0,
     win: [6.3, 10.1], win24: [9, 20], glow: [9, 15], glow24: [13, 25],
     anim: {"tree": [293, 550, 222, 334], "treeHole": [290, 547, 228, 340], "treePivot": [403.9, 871.6], "armL": [1154, 732, 45, 50], "armR": [1261, 736, 57, 52], "armHole": [1152, 730, 168, 59], "pivL": [1190.75, 772.4], "pivR": [1269.5, 779.75], "face": [1202, 708, 45, 49]},
     snowman: [1232, 765, 150, 225], mouth: [1212, 720], tree: [410, 715, 180, 300], treeTop: [440, 600], lamps: [[717, 779, 70, 95], [958, 774, 70, 95]], chimney: [1045, 135, 135, 195], smoke: [1045, 55], heart: { c: [834.5, 149], s: [81, 76], hs: [89, 84], img: 'pc' }, fences: [{"slats": [[447.5, 835.5, 29], [487.5, 835.5, 29], [522.5, 835.5, 29], [560.5, 835.5, 29]], "patch": [504.0, 835.5, 150]}, {"slats": [[1075.5, 832.5, 29], [1113.5, 832.5, 31], [1151.5, 832.5, 31]], "patch": [1114.0, 832.5, 114]}], drift: [[90, 170], [0.2, 0.45]],
@@ -438,7 +439,7 @@ function addStar(parent, leftPct, topPct, sizePx) {
 ['karte-lebkuchen.webp','schnee.jpg', (PC ? 'pc' : 'handy') + '-herz.png', (PC ? 'pc' : 'handy') + '-herz-loch.png'].forEach(u => { const i = new Image(); i.src = u; });
 
 const REPO = 'justynagladysz-star/Advent-';
-const V = '?v=35';   // neue Nummer = Browser lädt die Bilder frisch
+const V = '?v=34';   // neue Nummer = Browser lädt die Bilder frisch
 async function findImage() {
   return L.img + V;
 }
@@ -476,19 +477,15 @@ findImage().then(src => {
 
     // Fenster, deren Tag noch nicht da ist, sind geschlossen
     const today = unlockedUpTo(), IMZ = PC ? 'pc' : 'handy';
-    Object.entries(L.zu).forEach(([k, [x, y, w, h, f]]) => {
+    Object.entries(L.zu).forEach(([k, [x, y, w, h]]) => {
       const d = +k;
       if (d < today) return;
       const z = document.createElement('div'); z.className = 'zu';
       z.style.left = (x / L.W * 100) + '%'; z.style.top = ((y + L.OFF) / L.H * 100) + '%';
       z.style.width = (w / L.W * 100) + '%'; z.style.height = (h / L.H * 100) + '%';
-      const url = 'url(zu/' + IMZ + '-tuer-' + d + '.png' + V + ')';
+      const url = 'url(zu/' + IMZ + '-' + d + '.png' + V + ')';
       z.innerHTML = '<i></i><i></i>';
-      const [li, ri] = z.querySelectorAll('i');
-      li.style.width = (f * 100) + '%'; ri.style.width = ((1 - f) * 100) + '%';
-      li.style.backgroundImage = ri.style.backgroundImage = url;
-      li.style.backgroundSize = (100 / f) + '% 100%'; li.style.backgroundPosition = '0 0';
-      ri.style.backgroundSize = (100 / (1 - f)) + '% 100%'; ri.style.backgroundPosition = '100% 0';
+      z.querySelectorAll('i').forEach(i => i.style.backgroundImage = url);
       wrap.appendChild(z); closedWin[d] = z;
     });
     // heute ist der Tag: das Fenster öffnet sich von selbst und leuchtet auf
@@ -760,8 +757,8 @@ function openShutter(d) {
   const z = closedWin[d];
   if (!z) return 0;
   z.classList.add('open'); delete closedWin[d];
-  setTimeout(() => z.remove(), 1500);
-  return 900;
+  setTimeout(() => z.remove(), 1100);
+  return 750;
 }
 function glowAt(d) {
   const [l, t] = px(...windows[d]), sz = d === 24 ? L.glow24 : L.glow;
