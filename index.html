@@ -348,7 +348,7 @@ findImage().then(src => {
     });
 
     // Sticker gescannt: dieses Türchen öffnet sich sofort
-    if (windows[day]) openDoor(day);
+    if (windows[day]) setTimeout(() => openDoor(day), 2000);   // erst 2 Sekunden das Haus zeigen
   };
 });
 
