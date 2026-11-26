@@ -137,11 +137,15 @@
     80%  { transform: translate(-50%, -50%) rotate(330deg) scale(1.18); filter: drop-shadow(0 4px 4px rgba(60,25,5,.45)); }
     100% { transform: translate(-50%, -50%) rotate(360deg) scale(1); }
   }
-  .crumb { position: absolute; pointer-events: none; z-index: 2; border-radius: 45% 55% 50% 40%;
-    background: radial-gradient(circle at 35% 30%, #c98d58, #9a5f2f 70%);
-    box-shadow: 0 1px 1px rgba(60,25,5,.4);
+  /* Lebkuchenkrümel: matt, körnig, weiche Ränder */
+  .crumb { position: absolute; pointer-events: none; z-index: 2; filter: blur(.35px);
+    background:
+      radial-gradient(circle at 30% 38%, rgba(90,45,15,.4) 0 7%, transparent 9%),
+      radial-gradient(circle at 66% 60%, rgba(90,45,15,.32) 0 6%, transparent 8%),
+      radial-gradient(circle at 52% 28%, rgba(230,180,130,.5) 0 5%, transparent 7%),
+      radial-gradient(ellipse at 45% 40%, #c2834c 0, #9e5d29 40%, rgba(130,72,30,.75) 60%, rgba(120,66,26,0) 74%);
     animation: crumbfall var(--t) cubic-bezier(.4,0,.9,.6) forwards; }
-  .crumb.ice { background: radial-gradient(circle at 35% 30%, #ffffff, #eadfd2 75%); }
+  .crumb.ice { background: radial-gradient(ellipse at 50% 50%, #f6ecdf 0, #eddccb 40%, rgba(232,214,196,.6) 60%, rgba(232,214,196,0) 74%); }
   @keyframes crumbfall {
     0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
     85%  { opacity: 1; }
@@ -415,7 +419,7 @@ function addStar(parent, leftPct, topPct, sizePx) {
 ['karte-lebkuchen.webp','schnee.jpg', (PC ? 'pc' : 'handy') + '-herz.png', (PC ? 'pc' : 'handy') + '-herz-loch.png'].forEach(u => { const i = new Image(); i.src = u; });
 
 const REPO = 'justynagladysz-star/Advent-';
-const V = '?v=31';   // neue Nummer = Browser lädt die Bilder frisch
+const V = '?v=32';   // neue Nummer = Browser lädt die Bilder frisch
 async function findImage() {
   return L.img + V;
 }
@@ -639,8 +643,9 @@ findImage().then(src => {
           setTimeout(() => {
             const c = document.createElement('div');
             c.className = 'crumb' + (Math.random() < .3 ? ' ice' : '');
-            const sz = Math.max(2.5, hw * (0.04 + Math.random() * 0.05));
-            c.style.width = sz + 'px'; c.style.height = sz * (0.75 + Math.random() * 0.4) + 'px';
+            const sz = Math.max(4, hw * (0.06 + Math.random() * 0.06));
+            c.style.width = sz + 'px'; c.style.height = sz * (0.7 + Math.random() * 0.45) + 'px';
+            c.style.borderRadius = [0,0,0,0].map(() => (35 + Math.random() * 30 | 0) + '%').join(' ');
             c.style.left = 'calc(' + l + '% + ' + ((Math.random() - .5) * hw * 0.8) + 'px)';
             c.style.top = 'calc(' + t + '% + ' + (hw * (0.1 + Math.random() * 0.3)) + 'px)';
             c.style.setProperty('--dx', ((Math.random() - .5) * hw * 0.9) + 'px');
