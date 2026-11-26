@@ -195,6 +195,17 @@
     font-family: 'Zuckerguss', cursive; font-weight: 700; line-height: 1; white-space: nowrap;
     color: #f3ddc9; opacity: .93; font-variant-numeric: lining-nums; filter: blur(.012em);
     text-shadow: 0 0 .05em rgba(250,232,214,.75), 0 .03em .03em rgba(214,186,160,.9), 0 .06em .08em rgba(80,40,12,.45); }
+  /* geschlossene Fenster (aus der Vorlage), öffnen sich wie zwei Flügel */
+  .zu { position: absolute; z-index: 1; pointer-events: none; display: flex; perspective: 260px; }
+  .zu > i { flex: 1; height: 100%; background-repeat: no-repeat; background-size: 200% 100%;
+    transition: transform 1s cubic-bezier(.45,.05,.3,1), opacity 1s ease-in; }
+  .zu > i:first-child { background-position: 0 0; transform-origin: 0 50%; }
+  .zu > i:last-child  { background-position: 100% 0; transform-origin: 100% 50%; }
+  .zu.open > i:first-child { transform: rotateY(-115deg); opacity: 0; }
+  .zu.open > i:last-child  { transform: rotateY(115deg); opacity: 0; }
+  .zu.shake { animation: zushake .45s ease; }
+  @keyframes zushake { 0%,100% { margin-left: 0; } 20% { margin-left: -.4%; } 40% { margin-left: .4%; }
+    60% { margin-left: -.25%; } 80% { margin-left: .25%; } }
   .hint { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 28px);
     transform: translateX(-50%) translateY(20px); opacity: 0; transition: all .4s ease;
     background: #f2e3cb; color: #3a2414; font-family: 'EB Garamond', Georgia, serif; font-size: 18px;
@@ -358,7 +369,7 @@ const PC = innerWidth / innerHeight > 1.05;
 if (PC) document.body.classList.add('pc');
 const LAYOUTS = {
   handy: {
-    img: 'haus-voll.jpg', nums: {"pos": {"1": [364.5, 364.5], "2": [519.0, 365.0], "3": [684.5, 366.5], "4": [834.5, 367.0], "5": [287.0, 514.5], "6": [448.0, 514.0], "7": [603.5, 514.5], "8": [762.0, 514.5], "9": [915.0, 515.0], "10": [282.0, 662.0], "11": [443.5, 660.0], "12": [604.0, 660.0], "13": [762.5, 660.0], "14": [921.0, 660.0], "15": [279.0, 808.0], "16": [445.0, 807.5], "17": [609.0, 808.0], "18": [765.0, 807.5], "19": [928.5, 808.0], "20": [275.0, 957.0], "21": [430.0, 955.5], "22": [786.5, 955.5], "23": [944.0, 955.0], "24": [610.0, 1055.0]}, "h": 43, "h24": 48}, W: 1199, H: 2702, OFF: 790,
+    img: 'haus-voll.jpg', zu: {"1": [287.6, 287.6, 154, 145], "2": [443.8, 289.8, 150, 142], "3": [610.0, 292.0, 149, 141], "4": [761.6, 294.1, 146, 138], "5": [212.5, 440.0, 149, 141], "6": [375.1, 441.1, 146, 138], "7": [530.0, 441.0, 147, 139], "8": [687.5, 440.0, 149, 141], "9": [842.1, 442.1, 146, 138], "10": [207.8, 587.8, 148, 140], "11": [369.3, 585.8, 148, 140], "12": [529.8, 585.8, 148, 140], "13": [688.3, 585.8, 148, 140], "14": [846.8, 585.8, 148, 140], "15": [204.8, 733.8, 148, 140], "16": [369.0, 731.5, 152, 143], "17": [532.2, 731.2, 154, 145], "18": [689.0, 731.5, 152, 143], "19": [853.3, 732.8, 150, 142], "20": [200.8, 882.8, 148, 140], "21": [357.6, 883.1, 145, 137], "22": [714.1, 883.1, 145, 137], "23": [869.8, 880.8, 148, 140]}, nums: {"pos": {"1": [364.5, 364.5], "2": [519.0, 365.0], "3": [684.5, 366.5], "4": [834.5, 367.0], "5": [287.0, 514.5], "6": [448.0, 514.0], "7": [603.5, 514.5], "8": [762.0, 514.5], "9": [915.0, 515.0], "10": [282.0, 662.0], "11": [443.5, 660.0], "12": [604.0, 660.0], "13": [762.5, 660.0], "14": [921.0, 660.0], "15": [279.0, 808.0], "16": [445.0, 807.5], "17": [609.0, 808.0], "18": [765.0, 807.5], "19": [928.5, 808.0], "20": [275.0, 957.0], "21": [430.0, 955.5], "22": [786.5, 955.5], "23": [944.0, 955.0], "24": [610.0, 1055.0]}, "h": 43, "h24": 48}, W: 1199, H: 2702, OFF: 790,
     win: [11, 9.5 * 1312 / 2702], win24: [16, 13 * 1312 / 2702],
     glow: [16, 13 * 1312 / 2702], glow24: [22, 17 * 1312 / 2702],
     anim: {"tree": [0, 809, 203, 431], "treeHole": [0, 806, 206, 437], "treePivot": [60.400000000000006, 1226.6], "armL": [1015, 1052, 47, 54], "armR": [1131, 1057, 60, 55], "armHole": [1013, 1051, 180, 63], "pivL": [1054.3, 1096.12], "pivR": [1139.8, 1104.1], "face": [1066, 1027, 50, 52]},
@@ -378,7 +389,7 @@ const LAYOUTS = {
     ]
   },
   pc: {
-    img: 'haus-pc.jpg', nums: {"pos": {"1": [665.0, 266.5], "2": [777.0, 266.5], "3": [895.0, 267.0], "4": [1004.5, 267.0], "5": [609.0, 371.0], "6": [725.0, 371.0], "7": [837.5, 371.5], "8": [951.5, 371.0], "9": [1063.0, 371.0], "10": [606.0, 474.0], "11": [722.5, 473.0], "12": [838.0, 473.0], "13": [952.0, 474.0], "14": [1067.0, 473.0], "15": [603.5, 576.0], "16": [722.5, 576.0], "17": [840.0, 576.5], "18": [953.5, 576.0], "19": [1071.0, 576.5], "20": [601.0, 678.0], "21": [713.0, 678.0], "22": [966.0, 678.0], "23": [1079.5, 678.0], "24": [839.5, 752.5]}, "h": 30, "h24": 35}, W: 1672, H: 941, OFF: 0,
+    img: 'haus-pc.jpg', zu: {"1": [612.0, 213.5, 106, 100], "2": [724.0, 213.5, 106, 100], "3": [842.0, 214.0, 106, 100], "4": [951.5, 214.0, 106, 100], "5": [556.0, 318.0, 106, 100], "6": [672.0, 318.0, 106, 100], "7": [784.5, 318.5, 106, 100], "8": [898.5, 318.0, 106, 100], "9": [1010.0, 318.0, 106, 100], "10": [553.0, 421.0, 106, 100], "11": [669.5, 420.0, 106, 100], "12": [785.0, 420.0, 106, 100], "13": [899.0, 421.0, 106, 100], "14": [1014.0, 420.0, 106, 100], "15": [550.5, 523.0, 106, 100], "16": [669.5, 523.0, 106, 100], "17": [787.0, 523.5, 106, 100], "18": [900.5, 523.0, 106, 100], "19": [1018.0, 523.5, 106, 100], "20": [548.0, 625.0, 106, 100], "21": [660.0, 625.0, 106, 100], "22": [913.0, 625.0, 106, 100], "23": [1026.5, 625.0, 106, 100]}, nums: {"pos": {"1": [665.0, 266.5], "2": [777.0, 266.5], "3": [895.0, 267.0], "4": [1004.5, 267.0], "5": [609.0, 371.0], "6": [725.0, 371.0], "7": [837.5, 371.5], "8": [951.5, 371.0], "9": [1063.0, 371.0], "10": [606.0, 474.0], "11": [722.5, 473.0], "12": [838.0, 473.0], "13": [952.0, 474.0], "14": [1067.0, 473.0], "15": [603.5, 576.0], "16": [722.5, 576.0], "17": [840.0, 576.5], "18": [953.5, 576.0], "19": [1071.0, 576.5], "20": [601.0, 678.0], "21": [713.0, 678.0], "22": [966.0, 678.0], "23": [1079.5, 678.0], "24": [839.5, 752.5]}, "h": 30, "h24": 35}, W: 1672, H: 941, OFF: 0,
     win: [6.3, 10.1], win24: [9, 20], glow: [9, 15], glow24: [13, 25],
     anim: {"tree": [293, 550, 222, 334], "treeHole": [290, 547, 228, 340], "treePivot": [403.9, 871.6], "armL": [1154, 732, 45, 50], "armR": [1261, 736, 57, 52], "armHole": [1152, 730, 168, 59], "pivL": [1190.75, 772.4], "pivR": [1269.5, 779.75], "face": [1202, 708, 45, 49]},
     snowman: [1232, 765, 150, 225], mouth: [1212, 720], tree: [410, 715, 180, 300], treeTop: [440, 600], lamps: [[717, 779, 70, 95], [958, 774, 70, 95]], chimney: [1045, 135, 135, 195], smoke: [1045, 55], heart: { c: [834.5, 149], s: [81, 76], hs: [89, 84], img: 'pc' }, fences: [{"slats": [[447.5, 835.5, 29], [487.5, 835.5, 29], [522.5, 835.5, 29], [560.5, 835.5, 29]], "patch": [504.0, 835.5, 150]}, {"slats": [[1075.5, 832.5, 29], [1113.5, 832.5, 31], [1151.5, 832.5, 31]], "patch": [1114.0, 832.5, 114]}], drift: [[90, 170], [0.2, 0.45]],
@@ -419,7 +430,7 @@ function addStar(parent, leftPct, topPct, sizePx) {
 ['karte-lebkuchen.webp','schnee.jpg', (PC ? 'pc' : 'handy') + '-herz.png', (PC ? 'pc' : 'handy') + '-herz-loch.png'].forEach(u => { const i = new Image(); i.src = u; });
 
 const REPO = 'justynagladysz-star/Advent-';
-const V = '?v=32';   // neue Nummer = Browser lädt die Bilder frisch
+const V = '?v=33';   // neue Nummer = Browser lädt die Bilder frisch
 async function findImage() {
   return L.img + V;
 }
@@ -454,6 +465,25 @@ findImage().then(src => {
       if (y > 9 && y < 22) y = Math.random() < .5 ? 3 + Math.random() * 6 : 22 + Math.random() * 6;
       addStar(wrap, 4 + Math.random() * 92, y, 6 + Math.random() * 12);
     }
+
+    // Fenster, deren Tag noch nicht da ist, sind geschlossen
+    const today = unlockedUpTo(), IMZ = PC ? 'pc' : 'handy';
+    Object.entries(L.zu).forEach(([k, [x, y, w, h]]) => {
+      const d = +k;
+      if (d < today) return;
+      const z = document.createElement('div'); z.className = 'zu';
+      z.style.left = (x / L.W * 100) + '%'; z.style.top = ((y + L.OFF) / L.H * 100) + '%';
+      z.style.width = (w / L.W * 100) + '%'; z.style.height = (h / L.H * 100) + '%';
+      const url = 'url(zu/' + IMZ + '-' + d + '.png' + V + ')';
+      z.innerHTML = '<i></i><i></i>';
+      z.querySelectorAll('i').forEach(i => i.style.backgroundImage = url);
+      wrap.appendChild(z); closedWin[d] = z;
+    });
+    // heute ist der Tag: das Fenster öffnet sich von selbst und leuchtet auf
+    if (closedWin[today] && day !== today) setTimeout(() => {
+      openShutter(today);
+      setTimeout(() => { if (!busy) glowAt(today); }, 700);
+    }, 1200);
 
     // Nummern auf die Fenster schreiben
     Object.entries(L.nums.pos).forEach(([d, [x, y]]) => {
@@ -713,23 +743,36 @@ function unlockedUpTo() {
 }
 
 let busy = false;
-function openDoor(d) {
-  if (busy) return;
-  busy = true;
+const closedWin = {};
+function openShutter(d) {
+  const z = closedWin[d];
+  if (!z) return 0;
+  z.classList.add('open'); delete closedWin[d];
+  setTimeout(() => z.remove(), 1100);
+  return 750;
+}
+function glowAt(d) {
   const [l, t] = px(...windows[d]), sz = d === 24 ? L.glow24 : L.glow;
   glow.classList.remove('on'); void glow.offsetWidth;
   glow.style.left = l + '%';
   glow.style.top = t + '%';
   glow.style.width = sz[0] + '%';
   glow.style.height = sz[1] + '%';
-  setTimeout(() => glow.classList.add('on'), 300);
-  setTimeout(() => { openCard(d); busy = false; }, 2800);
+  glow.classList.add('on');
+}
+function openDoor(d) {
+  if (busy) return;
+  busy = true;
+  const wait = openShutter(d);
+  setTimeout(() => glowAt(d), 300 + wait);
+  setTimeout(() => { openCard(d); busy = false; }, 2800 + wait);
 }
 
 let hintTimer;
 function tapDoor(d, btn) {
   if (d <= unlockedUpTo()) { openDoor(d); return; }
-  btn.classList.remove('shake'); void btn.offsetWidth; btn.classList.add('shake');
+  const z = closedWin[d] || btn;
+  z.classList.remove('shake'); void z.offsetWidth; z.classList.add('shake');
   const hint = document.getElementById('hint');
   hint.textContent = 'Psst … noch nicht! Dieses Türchen öffnet sich am ' + d + '. Dezember.';
   hint.classList.add('show');
