@@ -96,9 +96,8 @@
   .overlay {
     position: fixed; inset: 0; z-index: 6; display: none;
     background:
-      radial-gradient(circle at 50% 40%, rgba(255,225,180,.14), transparent 65%),
-      radial-gradient(circle at 50% 110%, rgba(60,30,10,.35), transparent 60%),
-      #9c6a42;
+      radial-gradient(ellipse at 50% 50%, rgba(80,40,15,.18), rgba(80,40,15,0) 45%, rgba(60,30,10,.28) 100%),
+      url('schnee.jpg') center / cover no-repeat, #c9a07c;
     align-items: center; justify-content: center;
     padding: calc(env(safe-area-inset-top) + 60px) 14px calc(env(safe-area-inset-bottom) + 20px);
   }
@@ -302,7 +301,7 @@ function addStar(parent, leftPct, topPct, sizePx) {
   parent.appendChild(s);
 }
 
-['karte-lebkuchen.webp'].forEach(u => { const i = new Image(); i.src = u; });
+['karte-lebkuchen.webp','schnee.jpg'].forEach(u => { const i = new Image(); i.src = u; });
 
 const REPO = 'justynagladysz-star/Advent-';
 async function findImage() {
