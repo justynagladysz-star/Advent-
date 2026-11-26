@@ -124,6 +124,26 @@
     70%  { opacity: .95; }
     100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(var(--s, 1.6)); }
   }
+  .heart-spin { position: absolute; transform: translate(-50%, -50%); pointer-events: none; z-index: 2; opacity: 0; }
+  .heart-spin.go { opacity: 1; animation: spin360 1.2s cubic-bezier(.45,.05,.35,1) forwards; }
+  .heart-hole { position: absolute; transform: translate(-50%, -50%); pointer-events: none; z-index: 2; opacity: 0; }
+  .heart-hole.go { opacity: 1; }
+  @keyframes spin360 {
+    0%   { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+    20%  { transform: translate(-50%, -50%) rotate(30deg) scale(1.18); filter: drop-shadow(0 4px 4px rgba(60,25,5,.45)); }
+    80%  { transform: translate(-50%, -50%) rotate(330deg) scale(1.18); filter: drop-shadow(0 4px 4px rgba(60,25,5,.45)); }
+    100% { transform: translate(-50%, -50%) rotate(360deg) scale(1); }
+  }
+  .crumb { position: absolute; pointer-events: none; z-index: 2; border-radius: 45% 55% 50% 40%;
+    background: radial-gradient(circle at 35% 30%, #c98d58, #9a5f2f 70%);
+    box-shadow: 0 1px 1px rgba(60,25,5,.4);
+    animation: crumbfall var(--t) cubic-bezier(.4,0,.9,.6) forwards; }
+  .crumb.ice { background: radial-gradient(circle at 35% 30%, #ffffff, #eadfd2 75%); }
+  @keyframes crumbfall {
+    0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+    85%  { opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)) rotate(var(--r)); opacity: 0; }
+  }
   .hint { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 28px);
     transform: translateX(-50%) translateY(20px); opacity: 0; transition: all .4s ease;
     background: #f2e3cb; color: #3a2414; font-family: 'EB Garamond', Georgia, serif; font-size: 18px;
@@ -290,7 +310,7 @@ const LAYOUTS = {
     img: 'haus-voll.jpg', W: 1199, H: 2702, OFF: 790,
     win: [11, 9.5 * 1312 / 2702], win24: [16, 13 * 1312 / 2702],
     glow: [12, 10 * 1312 / 2702], glow24: [18, 14 * 1312 / 2702],
-    snowman: [1098, 1080, 165, 250], mouth: [1075, 1040], tree: [92, 1010, 185, 390], treeTop: [95, 900], lamps: [[445, 1095, 70, 110], [754, 1083, 70, 110]], chimney: [875, 150, 170, 210], smoke: [878, 45], drift: [[20, 70], [1.1, 2.0]],
+    snowman: [1098, 1080, 165, 250], mouth: [1075, 1040], tree: [92, 1010, 185, 390], treeTop: [95, 900], lamps: [[445, 1095, 70, 110], [754, 1083, 70, 110]], chimney: [875, 150, 170, 210], smoke: [878, 45], heart: { c: [598, 206], s: [108, 100], hs: [116, 108], img: 'handy' }, drift: [[20, 70], [1.1, 2.0]],
     windows: {
       1:[365,370], 2:[518,370], 3:[683,370], 4:[835,370],
       5:[288,515], 6:[447,515], 7:[602,515], 8:[762,515], 9:[916,515],
@@ -308,7 +328,7 @@ const LAYOUTS = {
   pc: {
     img: 'haus-pc.jpg', W: 1672, H: 941, OFF: 0,
     win: [6.3, 10.1], win24: [9, 20], glow: [7, 11], glow24: [10.5, 21],
-    snowman: [1232, 765, 150, 225], mouth: [1212, 720], tree: [410, 715, 180, 300], treeTop: [440, 600], lamps: [[717, 779, 70, 95], [958, 774, 70, 95]], chimney: [1045, 135, 135, 195], smoke: [1045, 55], drift: [[110, 230], [0.15, 0.45]],
+    snowman: [1232, 765, 150, 225], mouth: [1212, 720], tree: [410, 715, 180, 300], treeTop: [440, 600], lamps: [[717, 779, 70, 95], [958, 774, 70, 95]], chimney: [1045, 135, 135, 195], smoke: [1045, 55], heart: { c: [834.5, 149], s: [81, 76], hs: [89, 84], img: 'pc' }, drift: [[110, 230], [0.15, 0.45]],
     windows: {
       1:[665,268], 2:[778,268], 3:[893,268], 4:[1005,268],
       5:[610,372], 6:[722,372], 7:[836,372], 8:[950,372], 9:[1063,372],
@@ -343,7 +363,7 @@ function addStar(parent, leftPct, topPct, sizePx) {
   parent.appendChild(s);
 }
 
-['karte-lebkuchen.webp','schnee.jpg'].forEach(u => { const i = new Image(); i.src = u; });
+['karte-lebkuchen.webp','schnee.jpg', (PC ? 'pc' : 'handy') + '-herz.png', (PC ? 'pc' : 'handy') + '-herz-loch.png'].forEach(u => { const i = new Image(); i.src = u; });
 
 const REPO = 'justynagladysz-star/Advent-';
 async function findImage() {
@@ -472,6 +492,47 @@ findImage().then(src => {
         }
       };
       wrap.appendChild(btn);
+    }
+
+    // Herz unter dem Dach: dreht sich einmal, Krümel fallen herunter
+    {
+      const H = L.heart, [l, t] = px(...H.c);
+      const pct = (v, total) => (v / total * 100) + '%';
+      const hole = document.createElement('img');
+      hole.className = 'heart-hole'; hole.src = H.img + '-herz-loch.png'; hole.alt = '';
+      hole.style.left = l + '%'; hole.style.top = t + '%'; hole.style.width = pct(H.hs[0], L.W);
+      const spr = document.createElement('img');
+      spr.className = 'heart-spin'; spr.src = H.img + '-herz.png'; spr.alt = '';
+      spr.style.left = l + '%'; spr.style.top = t + '%'; spr.style.width = pct(H.s[0], L.W);
+      const btn = document.createElement('button');
+      btn.className = 'lamp'; btn.setAttribute('aria-label', 'Herz');
+      btn.style.left = l + '%'; btn.style.top = t + '%';
+      btn.style.width = pct(H.s[0] * 1.1, L.W); btn.style.height = pct(H.s[1] * 1.1, L.H);
+      wrap.appendChild(hole); wrap.appendChild(spr); wrap.appendChild(btn);
+      let spinning = false;
+      btn.onclick = () => {
+        if (spinning) return;
+        spinning = true;
+        hole.classList.add('go'); spr.classList.remove('go'); void spr.offsetWidth; spr.classList.add('go');
+        const hw = wrap.clientWidth * H.s[0] / L.W;
+        for (let i = 0; i < 9; i++) {
+          setTimeout(() => {
+            const c = document.createElement('div');
+            c.className = 'crumb' + (Math.random() < .3 ? ' ice' : '');
+            const sz = Math.max(2.5, hw * (0.04 + Math.random() * 0.05));
+            c.style.width = sz + 'px'; c.style.height = sz * (0.75 + Math.random() * 0.4) + 'px';
+            c.style.left = 'calc(' + l + '% + ' + ((Math.random() - .5) * hw * 0.8) + 'px)';
+            c.style.top = 'calc(' + t + '% + ' + (hw * (0.1 + Math.random() * 0.3)) + 'px)';
+            c.style.setProperty('--dx', ((Math.random() - .5) * hw * 0.9) + 'px');
+            c.style.setProperty('--dy', (hw * (1.6 + Math.random() * 1.6)) + 'px');
+            c.style.setProperty('--r', ((Math.random() - .5) * 540) + 'deg');
+            c.style.setProperty('--t', (0.9 + Math.random() * 0.7).toFixed(2) + 's');
+            wrap.appendChild(c);
+            c.addEventListener('animationend', () => c.remove());
+          }, 150 + Math.random() * 800);
+        }
+        setTimeout(() => { spr.classList.remove('go'); hole.classList.remove('go'); spinning = false; }, 1250);
+      };
     }
 
     // Sticker gescannt: dieses Türchen öffnet sich sofort
