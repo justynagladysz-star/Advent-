@@ -84,6 +84,22 @@
   .hit.shake { animation: shake .45s ease; }
   @keyframes shake { 0%,100% { margin-left: 0; } 20% { margin-left: -6px; } 40% { margin-left: 6px; }
     60% { margin-left: -4px; } 80% { margin-left: 4px; } }
+  .snowman { position: absolute; transform: translate(-50%, -50%); border: 0; padding: 0; background: transparent;
+    cursor: pointer; -webkit-tap-highlight-color: transparent; z-index: 3; }
+  .bubble {
+    position: absolute; z-index: 4; transform: translate(-100%, -100%) scale(.4); transform-origin: 100% 100%;
+    opacity: 0; pointer-events: none; transition: transform .35s cubic-bezier(.3,1.6,.5,1), opacity .25s;
+    background: #f6eee4; color: #6b3b19; white-space: nowrap;
+    font-family: 'Zuckerguss', cursive; font-weight: 700; font-size: clamp(16px, 4.6vw, 26px); line-height: 1;
+    padding: .55em .85em .6em; border-radius: 1.2em 1.2em .25em 1.2em;
+    border: 2.5px solid #fffaf3;
+    box-shadow: 0 5px 12px rgba(60,25,5,.4), inset 0 -3px 0 rgba(201,170,136,.45);
+  }
+  body.pc .bubble { font-size: clamp(16px, 1.6vw, 30px); }
+  .bubble::after { content: ""; position: absolute; right: -2px; bottom: -.75em; width: 1em; height: 1em;
+    background: #f6eee4; border-right: 2.5px solid #fffaf3; border-bottom: 2.5px solid #fffaf3;
+    clip-path: polygon(0 0, 100% 0, 100% 100%); }
+  .bubble.show { opacity: 1; transform: translate(-100%, -100%) scale(1); }
   .hint { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 28px);
     transform: translateX(-50%) translateY(20px); opacity: 0; transition: all .4s ease;
     background: #f2e3cb; color: #3a2414; font-family: 'EB Garamond', Georgia, serif; font-size: 18px;
@@ -250,6 +266,7 @@ const LAYOUTS = {
     img: 'haus-voll.jpg', W: 1199, H: 2702, OFF: 790,
     win: [11, 9.5 * 1312 / 2702], win24: [16, 13 * 1312 / 2702],
     glow: [12, 10 * 1312 / 2702], glow24: [18, 14 * 1312 / 2702],
+    snowman: [1098, 1080, 165, 250], mouth: [1075, 1040],
     windows: {
       1:[365,370], 2:[518,370], 3:[683,370], 4:[835,370],
       5:[288,515], 6:[447,515], 7:[602,515], 8:[762,515], 9:[916,515],
@@ -267,6 +284,7 @@ const LAYOUTS = {
   pc: {
     img: 'haus-pc.jpg', W: 1672, H: 941, OFF: 0,
     win: [6.3, 10.1], win24: [9, 20], glow: [7, 11], glow24: [10.5, 21],
+    snowman: [1232, 765, 150, 225], mouth: [1212, 720],
     windows: {
       1:[665,268], 2:[778,268], 3:[893,268], 4:[1005,268],
       5:[610,372], 6:[722,372], 7:[836,372], 8:[950,372], 9:[1063,372],
@@ -346,6 +364,23 @@ findImage().then(src => {
       b.onclick = () => tapDoor(d, b);
       wrap.appendChild(b);
     });
+
+    // Schneemann zum Antippen
+    const [sx, sy, sw, shh] = L.snowman, [sl, st] = px(sx, sy);
+    const sm = document.createElement('button');
+    sm.className = 'snowman'; sm.setAttribute('aria-label', 'Schneemann');
+    sm.style.left = sl + '%'; sm.style.top = st + '%';
+    sm.style.width = (sw / L.W * 100) + '%'; sm.style.height = (shh / L.H * 100) + '%';
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble'; bubble.textContent = 'Snowy, snowy Christmas!';
+    const [bl, bt] = px(L.mouth[0] - 18, L.mouth[1] - 30);
+    bubble.style.left = bl + '%'; bubble.style.top = bt + '%';
+    wrap.appendChild(bubble); wrap.appendChild(sm);
+    let bubbleTimer;
+    sm.onclick = () => {
+      bubble.classList.remove('show'); void bubble.offsetWidth; bubble.classList.add('show');
+      clearTimeout(bubbleTimer); bubbleTimer = setTimeout(() => bubble.classList.remove('show'), 2800);
+    };
 
     // Sticker gescannt: dieses Türchen öffnet sich sofort
     if (windows[day]) setTimeout(() => openDoor(day), 1000);   // erst 1 Sekunde das Haus zeigen
