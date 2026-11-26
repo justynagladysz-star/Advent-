@@ -144,6 +144,16 @@
     85%  { opacity: 1; }
     100% { transform: translate(var(--dx), var(--dy)) rotate(var(--r)); opacity: 0; }
   }
+  .slat, .fence-hole { position: absolute; transform: translate(-50%, -50%); pointer-events: none; z-index: 2; opacity: 0; }
+  .fence-hole.go { opacity: 1; }
+  .slat.go { opacity: 1; animation: hop .55s ease-out both; }
+  @keyframes hop {
+    0%   { transform: translate(-50%, -50%); }
+    35%  { transform: translate(-50%, calc(-50% - var(--h))) rotate(var(--rot)); }
+    65%  { transform: translate(-50%, -50%); }
+    80%  { transform: translate(-50%, calc(-50% - var(--h) * .25)); }
+    100% { transform: translate(-50%, -50%); }
+  }
   .hint { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 28px);
     transform: translateX(-50%) translateY(20px); opacity: 0; transition: all .4s ease;
     background: #f2e3cb; color: #3a2414; font-family: 'EB Garamond', Georgia, serif; font-size: 18px;
@@ -310,7 +320,7 @@ const LAYOUTS = {
     img: 'haus-voll.jpg', W: 1199, H: 2702, OFF: 790,
     win: [11, 9.5 * 1312 / 2702], win24: [16, 13 * 1312 / 2702],
     glow: [12, 10 * 1312 / 2702], glow24: [18, 14 * 1312 / 2702],
-    snowman: [1098, 1080, 165, 250], mouth: [1075, 1040], tree: [92, 1010, 185, 390], treeTop: [95, 900], lamps: [[445, 1095, 70, 110], [754, 1083, 70, 110]], chimney: [875, 150, 170, 210], smoke: [878, 45], heart: { c: [598, 206], s: [108, 100], hs: [116, 108], img: 'handy' }, drift: [[20, 70], [1.1, 2.0]],
+    snowman: [1098, 1080, 165, 250], mouth: [1075, 1040], tree: [92, 1010, 185, 390], treeTop: [95, 900], lamps: [[445, 1095, 70, 110], [754, 1083, 70, 110]], chimney: [875, 150, 170, 210], smoke: [878, 45], heart: { c: [598, 206], s: [108, 100], hs: [116, 108], img: 'handy' }, fences: [{"slats": [[107.5, 1167.5, 23], [157.5, 1167.5, 29], [200.5, 1167.5, 29], [243.5, 1167.5, 31]], "patch": [177.5, 1167.5, 171]}, {"slats": [[923.5, 1168.0, 31], [966.5, 1168.0, 31], [1003.5, 1168.0, 31]], "patch": [963.5, 1168.0, 119]}], drift: [[20, 70], [1.1, 2.0]],
     windows: {
       1:[365,370], 2:[518,370], 3:[683,370], 4:[835,370],
       5:[288,515], 6:[447,515], 7:[602,515], 8:[762,515], 9:[916,515],
@@ -328,7 +338,7 @@ const LAYOUTS = {
   pc: {
     img: 'haus-pc.jpg', W: 1672, H: 941, OFF: 0,
     win: [6.3, 10.1], win24: [9, 20], glow: [7, 11], glow24: [10.5, 21],
-    snowman: [1232, 765, 150, 225], mouth: [1212, 720], tree: [410, 715, 180, 300], treeTop: [440, 600], lamps: [[717, 779, 70, 95], [958, 774, 70, 95]], chimney: [1045, 135, 135, 195], smoke: [1045, 55], heart: { c: [834.5, 149], s: [81, 76], hs: [89, 84], img: 'pc' }, drift: [[110, 230], [0.15, 0.45]],
+    snowman: [1232, 765, 150, 225], mouth: [1212, 720], tree: [410, 715, 180, 300], treeTop: [440, 600], lamps: [[717, 779, 70, 95], [958, 774, 70, 95]], chimney: [1045, 135, 135, 195], smoke: [1045, 55], heart: { c: [834.5, 149], s: [81, 76], hs: [89, 84], img: 'pc' }, fences: [{"slats": [[447.5, 835.5, 29], [487.5, 835.5, 29], [522.5, 835.5, 29], [560.5, 835.5, 29]], "patch": [504.0, 835.5, 150]}, {"slats": [[1075.5, 832.5, 29], [1113.5, 832.5, 31], [1151.5, 832.5, 31]], "patch": [1114.0, 832.5, 114]}], drift: [[110, 230], [0.15, 0.45]],
     windows: {
       1:[665,268], 2:[778,268], 3:[893,268], 4:[1005,268],
       5:[610,372], 6:[722,372], 7:[836,372], 8:[950,372], 9:[1063,372],
@@ -534,6 +544,43 @@ findImage().then(src => {
         setTimeout(() => { spr.classList.remove('go'); hole.classList.remove('go'); spinning = false; }, 1250);
       };
     }
+
+    // Zaunlatten hüpfen sanft, eine nach der anderen
+    L.fences.forEach((f, fi) => {
+      const img = PC ? 'pc' : 'handy';
+      const [pxc, pyc, pw] = f.patch, [pl, pt] = px(pxc, pyc);
+      const hole = document.createElement('img');
+      hole.className = 'fence-hole'; hole.alt = ''; hole.src = img + '-zaun' + fi + '-loch.png';
+      hole.style.left = pl + '%'; hole.style.top = pt + '%'; hole.style.width = (pw / L.W * 100) + '%';
+      wrap.appendChild(hole);
+      const slats = f.slats.map(([cx, cy, w], si) => {
+        const [l, t] = px(cx, cy);
+        const e = document.createElement('img');
+        e.className = 'slat'; e.alt = ''; e.src = img + '-zaun' + fi + si + '.png';
+        e.style.left = l + '%'; e.style.top = t + '%'; e.style.width = (w / L.W * 100) + '%';
+        wrap.appendChild(e);
+        return e;
+      });
+      const btn = document.createElement('button');
+      btn.className = 'lamp'; btn.setAttribute('aria-label', 'Zaun ' + (fi + 1));
+      btn.style.left = pl + '%'; btn.style.top = pt + '%';
+      btn.style.width = (pw * 1.1 / L.W * 100) + '%'; btn.style.height = (95 / L.H * 100 * (PC ? 0.8 : 1)) + '%';
+      wrap.appendChild(btn);
+      let busyF = false;
+      btn.onclick = () => {
+        if (busyF) return; busyF = true;
+        const hpx = wrap.clientWidth * (PC ? 14 : 18) / L.W;
+        hole.classList.add('go');
+        slats.forEach((e, i) => {
+          e.style.setProperty('--h', hpx + 'px');
+          e.style.setProperty('--rot', ((Math.random() - .5) * 6).toFixed(1) + 'deg');
+          e.style.animationDelay = (i * 0.09) + 's';
+          e.classList.remove('go'); void e.offsetWidth; e.classList.add('go');
+        });
+        setTimeout(() => { slats.forEach(e => e.classList.remove('go')); hole.classList.remove('go'); busyF = false; },
+          550 + slats.length * 90 + 50);
+      };
+    });
 
     // Sticker gescannt: dieses Türchen öffnet sich sofort
     if (windows[day]) setTimeout(() => openDoor(day), 1000);   // erst 1 Sekunde das Haus zeigen
