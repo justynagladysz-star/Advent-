@@ -124,7 +124,9 @@
     font-family: 'Cormorant Garamond', serif; font-weight: 500;
     letter-spacing: .3em; font-size: 5.6cqw; margin: 0 0 3cqw; padding-left: .3em;
   }
-  .divider { display: block; width: 7cqw; margin: .5cqw auto 5cqw; opacity: .95; }
+  .divider { display: flex; align-items: center; justify-content: center; gap: 2.4cqw; margin: 0 auto 5.5cqw; }
+  .divider span { width: 1.1cqw; height: 1.1cqw; border-radius: 50%; background: #3a2414; }
+  .divider span:nth-child(2) { width: 1.9cqw; height: 1.9cqw; }
   .text { font-family: 'EB Garamond', Georgia, serif; font-size: 4.6cqw; line-height: 1.28; letter-spacing: .03em; }
   .text p { margin: 0 0 3.4cqw; }
   .text em { font-style: italic; }
@@ -157,7 +159,7 @@
       <img class="paper-top" src="karte-oben.png" alt="">
       <img class="paper-bottom" src="karte-unten.png" alt="">
       <h2 id="title">TÜRCHEN NR. 1</h2>
-      <img class="divider" src="bluete.png" alt="">
+      <div class="divider"><span></span><span></span><span></span></div>
       <div class="text" id="text"></div>
     </div>
   </div>
@@ -231,7 +233,7 @@ function addStar(parent, leftPct, topPct, sizePx) {
   parent.appendChild(s);
 }
 
-['karte-oben.png','karte-mitte.png','karte-unten.png','bluete.png'].forEach(u => { const i = new Image(); i.src = u; });
+['karte-oben.png','karte-mitte.png','karte-unten.png'].forEach(u => { const i = new Image(); i.src = u; });
 
 const REPO = 'justynagladysz-star/Advent-';
 async function findImage() {
