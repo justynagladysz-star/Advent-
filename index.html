@@ -415,7 +415,7 @@ function addStar(parent, leftPct, topPct, sizePx) {
 ['karte-lebkuchen.webp','schnee.jpg', (PC ? 'pc' : 'handy') + '-herz.png', (PC ? 'pc' : 'handy') + '-herz-loch.png'].forEach(u => { const i = new Image(); i.src = u; });
 
 const REPO = 'justynagladysz-star/Advent-';
-const V = '?v=30';   // neue Nummer = Browser lädt die Bilder frisch
+const V = '?v=31';   // neue Nummer = Browser lädt die Bilder frisch
 async function findImage() {
   return L.img + V;
 }
@@ -456,7 +456,7 @@ findImage().then(src => {
       const n = document.createElement('div'); n.className = 'wnum'; n.textContent = d;
       const [l, t] = px(x, y);
       n.style.left = l + '%'; n.style.top = t + '%';
-      n.style.fontSize = ((+d === 24 ? L.nums.h24 : L.nums.h) * 0.8 / 0.68 / L.W * 100) + 'cqw';
+      n.style.fontSize = ((+d === 24 ? L.nums.h24 : L.nums.h) * 0.62 / 0.68 / L.W * 100) + 'cqw';
       wrap.appendChild(n);
     });
 
