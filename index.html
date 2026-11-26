@@ -121,8 +121,9 @@
   .card .paper-top { top: 0; }
   .card .paper-bottom { bottom: 0; }
   .card h2 {
-    font-family: 'Cormorant Garamond', serif; font-weight: 500;
-    letter-spacing: .3em; font-size: 5.6cqw; margin: 0 0 3cqw; padding-left: .3em;
+    font-family: 'Zuckerguss', cursive; font-weight: 700; font-size: 9.5cqw; line-height: 1.1;
+    margin: 0 0 2.5cqw; color: #6b3b19;
+    text-shadow: 0 .22cqw 0 rgba(255,250,240,.6), 0 -.05cqw .1cqw rgba(60,30,10,.25);
   }
   .divider { display: flex; align-items: center; justify-content: center; gap: 2.4cqw; margin: 0 auto 5.5cqw; }
   .divider span { width: 1.1cqw; height: 1.1cqw; border-radius: 50%;
@@ -160,7 +161,7 @@
       <div class="paper-mid"></div>
       <img class="paper-top" src="karte-oben.png" alt="">
       <img class="paper-bottom" src="karte-unten.png" alt="">
-      <h2 id="title">TÜRCHEN NR. 1</h2>
+      <h2 id="title">Türchen Nr. 1</h2>
       <div class="divider"><span></span><span></span><span></span></div>
       <div class="text" id="text"></div>
     </div>
@@ -321,7 +322,7 @@ function tapDoor(d, btn) {
 
 
 function openCard(d) {
-  document.getElementById('title').textContent = 'TÜRCHEN NR. ' + d;
+  document.getElementById('title').textContent = 'Türchen Nr. ' + d;
   document.getElementById('text').innerHTML = messages[d] || '';
   // chinesisches Fragezeichen hat rechts Leerraum: durch schmales ersetzen, damit alles mittig steht
   document.querySelectorAll('#text .zh').forEach(el => el.innerHTML = el.innerHTML.replace(/？/g, '?').replace(/！/g, '!'));
