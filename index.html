@@ -152,15 +152,13 @@
   }
   .card h2 {
     font-family: 'Zuckerguss', cursive; font-weight: 700; font-size: calc(9cqw * var(--k)); line-height: 1.1;
-    margin: 0 0 calc(2cqw * var(--k)); color: #fffaf3;
-    text-shadow: 0 -.1cqw 0 #fff, 0 .3cqw 0 #e9dccb, 0 .55cqw .3cqw rgba(70,35,10,.5);
+    margin: 0 0 calc(2cqw * var(--k)); color: #e9e0d5;
+    text-shadow: 0 -.1cqw 0 #f2ece5, 0 .3cqw 0 #d4c1ad, 0 .55cqw .3cqw rgba(70,35,10,.5);
   }
-  .divider { display: flex; align-items: center; justify-content: center; gap: 2.4cqw;
-    margin: 0 auto calc(4.5cqw * var(--k)); }
-  .divider span { width: 1.1cqw; height: 1.1cqw; border-radius: 50%;
-    background: radial-gradient(circle at 40% 35%, #ffffff, #f4ece2 60%, #d9c7b2);
-    box-shadow: 0 .2cqw .2cqw rgba(70,35,10,.45); }
-  .divider span:nth-child(2) { width: 1.9cqw; height: 1.9cqw; }
+  .divider { display: flex; align-items: center; justify-content: center; gap: 1.6cqw;
+    margin: 0 auto calc(4.5cqw * var(--k)); filter: drop-shadow(0 .25cqw .15cqw rgba(60,25,5,.45)); }
+  .divider i { width: 9.5cqw; height: .75cqw; border-radius: 1cqw; background: linear-gradient(#f1ebe4, #ddcdbb); }
+  .divider b { width: 1.9cqw; height: 1.9cqw; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #f3ede6, #dccab7 75%); }
   .text { font-family: 'EB Garamond', Georgia, serif; font-weight: 500; font-size: calc(4.6cqw * var(--k)); line-height: 1.27; letter-spacing: .03em; }
   .text p { margin: 0 auto calc(3cqw * var(--k)); max-width: var(--w, 12.6em); }
   .text p.zh { max-width: none; }
@@ -203,7 +201,7 @@
     <div class="card">
       <div class="inner" id="inner">
         <h2 id="title">Türchen Nr. 1</h2>
-        <div class="divider"><span></span><span></span><span></span></div>
+        <div class="divider"><i></i><b></b><i></i></div>
         <div class="text" id="text"></div>
       </div>
     </div>
