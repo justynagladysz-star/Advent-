@@ -104,6 +104,26 @@
   .bubble.right.show { transform: translate(0, -100%) scale(1); }
   .bubble.right::after { right: auto; left: -2px; border-right: 0; border-left: 2.5px solid #fffaf3;
     clip-path: polygon(0 0, 100% 0, 0 100%); }
+  .lamp { position: absolute; transform: translate(-50%, -50%); border: 0; padding: 0; background: transparent;
+    cursor: pointer; -webkit-tap-highlight-color: transparent; z-index: 3; }
+  .lamp-glow { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle, rgba(255,245,200,1) 0%, rgba(255,214,120,.85) 22%, rgba(255,170,60,.45) 45%, rgba(255,150,40,0) 70%);
+    mix-blend-mode: screen; opacity: 0; z-index: 2; }
+  .lamp-glow.flash { animation: lampflash 1.6s ease-out; }
+  @keyframes lampflash { 0% { opacity: 0; transform: translate(-50%,-50%) scale(.6); }
+    15% { opacity: 1; transform: translate(-50%,-50%) scale(1.15); }
+    35% { opacity: .85; transform: translate(-50%,-50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%,-50%) scale(1); } }
+  .puff { position: absolute; pointer-events: none; z-index: 2; transform: translate(-50%, -50%);
+    animation: puffup var(--t, 2.6s) ease-out forwards; }
+  .puff svg { display: block; width: 100%; height: 100%; overflow: visible;
+    filter: drop-shadow(0 2px 3px rgba(90,45,15,.35)); }
+  @keyframes puffup {
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(.25); }
+    15%  { opacity: 1; }
+    70%  { opacity: .95; }
+    100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(var(--s, 1.6)); }
+  }
   .hint { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 28px);
     transform: translateX(-50%) translateY(20px); opacity: 0; transition: all .4s ease;
     background: #f2e3cb; color: #3a2414; font-family: 'EB Garamond', Georgia, serif; font-size: 18px;
@@ -270,7 +290,7 @@ const LAYOUTS = {
     img: 'haus-voll.jpg', W: 1199, H: 2702, OFF: 790,
     win: [11, 9.5 * 1312 / 2702], win24: [16, 13 * 1312 / 2702],
     glow: [12, 10 * 1312 / 2702], glow24: [18, 14 * 1312 / 2702],
-    snowman: [1098, 1080, 165, 250], mouth: [1075, 1040], tree: [92, 1010, 185, 390], treeTop: [95, 900],
+    snowman: [1098, 1080, 165, 250], mouth: [1075, 1040], tree: [92, 1010, 185, 390], treeTop: [95, 900], lamps: [[445, 1095, 70, 110], [754, 1083, 70, 110]], chimney: [875, 150, 170, 210], smoke: [878, 45], drift: [[20, 70], [1.1, 2.0]],
     windows: {
       1:[365,370], 2:[518,370], 3:[683,370], 4:[835,370],
       5:[288,515], 6:[447,515], 7:[602,515], 8:[762,515], 9:[916,515],
@@ -288,7 +308,7 @@ const LAYOUTS = {
   pc: {
     img: 'haus-pc.jpg', W: 1672, H: 941, OFF: 0,
     win: [6.3, 10.1], win24: [9, 20], glow: [7, 11], glow24: [10.5, 21],
-    snowman: [1232, 765, 150, 225], mouth: [1212, 720], tree: [410, 715, 180, 300], treeTop: [440, 600],
+    snowman: [1232, 765, 150, 225], mouth: [1212, 720], tree: [410, 715, 180, 300], treeTop: [440, 600], lamps: [[717, 779, 70, 95], [958, 774, 70, 95]], chimney: [1045, 135, 135, 195], smoke: [1045, 55], drift: [[110, 230], [0.15, 0.45]],
     windows: {
       1:[665,268], 2:[778,268], 3:[893,268], 4:[1005,268],
       5:[610,372], 6:[722,372], 7:[836,372], 8:[950,372], 9:[1063,372],
@@ -392,6 +412,56 @@ findImage().then(src => {
       'Ich spür’ meine Beine nicht.<br>Ich kann meine Beine nicht spüren!!', 'left');
     talker('Tanne', L.tree, L.treeTop,
       'Und wer ist der funky aussehende<br>Esel da drüben?', 'right');
+
+    // Laternen leuchten beim Antippen kurz heller
+    L.lamps.forEach(([cx, cy, w, h], i) => {
+      const [l, t] = px(cx, cy);
+      const g = document.createElement('div');
+      g.className = 'lamp-glow';
+      g.style.left = l + '%'; g.style.top = t + '%';
+      g.style.width = (w * 3.2 / L.W * 100) + '%'; g.style.aspectRatio = '1';
+      const btn = document.createElement('button');
+      btn.className = 'lamp'; btn.setAttribute('aria-label', 'Laterne ' + (i + 1));
+      btn.style.left = l + '%'; btn.style.top = t + '%';
+      btn.style.width = (w / L.W * 100) + '%'; btn.style.height = (h / L.H * 100) + '%';
+      btn.onclick = () => { g.classList.remove('flash'); void g.offsetWidth; g.classList.add('flash'); };
+      wrap.appendChild(g); wrap.appendChild(btn);
+    });
+
+    // Kamin: beim Antippen steigen Wölkchen auf
+    {
+      const [cx, cy, w, h] = L.chimney, [l, t] = px(cx, cy);
+      const btn = document.createElement('button');
+      btn.className = 'lamp'; btn.setAttribute('aria-label', 'Kamin');
+      btn.style.left = l + '%'; btn.style.top = t + '%';
+      btn.style.width = (w / L.W * 100) + '%'; btn.style.height = (h / L.H * 100) + '%';
+      const CLOUD = '<svg viewBox="0 0 100 64"><defs><radialGradient id="cg" cx="40%" cy="35%" r="70%">' +
+        '<stop offset="0" stop-color="#ffffff"/><stop offset=".65" stop-color="#f6eee4"/><stop offset="1" stop-color="#e2d2bf"/></radialGradient></defs>' +
+        '<g fill="url(#cg)" stroke="#fffaf3" stroke-width="2">' +
+        '<path d="M22 56 C8 56 4 44 12 37 C8 26 20 18 30 23 C33 10 50 6 58 16 C66 8 82 12 82 26 C94 27 98 42 88 50 C86 56 80 57 76 56 Z"/></g>' +
+        '<path d="M26 47 C32 50 40 50 45 47 M58 46 C63 49 70 49 74 45" fill="none" stroke="#e9dccb" stroke-width="2" stroke-linecap="round"/></svg>';
+      btn.onclick = () => {
+        const [sl, st] = px(...L.smoke), base = wrap.clientWidth * (w / L.W);
+        for (let i = 0; i < 5; i++) {
+          setTimeout(() => {
+            const p = document.createElement('div');
+            p.className = 'puff';
+            const size = base * (0.7 + Math.random() * 0.45);
+            p.style.left = sl + '%'; p.style.top = st + '%';
+            p.style.width = size + 'px'; p.style.height = size * 0.64 + 'px';
+            const [dxr, dyr] = L.drift;
+            p.style.setProperty('--dx', (dxr[0] + Math.random() * (dxr[1] - dxr[0])) + 'px');
+            p.style.setProperty('--dy', -(base * (dyr[0] + Math.random() * (dyr[1] - dyr[0]))) + 'px');
+            p.style.setProperty('--s', (1.4 + Math.random() * 0.6).toFixed(2));
+            p.style.setProperty('--t', (2.2 + Math.random() * 0.9).toFixed(2) + 's');
+            p.innerHTML = CLOUD;
+            wrap.appendChild(p);
+            p.addEventListener('animationend', () => p.remove());
+          }, i * 260);
+        }
+      };
+      wrap.appendChild(btn);
+    }
 
     // Sticker gescannt: dieses Türchen öffnet sich sofort
     if (windows[day]) setTimeout(() => openDoor(day), 1000);   // erst 1 Sekunde das Haus zeigen
