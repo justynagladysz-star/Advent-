@@ -160,20 +160,6 @@
     80%  { transform: translate(-50%, calc(-50% - var(--h) * .25)); }
     100% { transform: translate(-50%, -50%); }
   }
-  .arm-hole, .tree-spr { position: absolute; pointer-events: none; z-index: 2; }
-  .tree-spr { opacity: 0; transform-origin: 45% 100%; }
-  .tree-spr.go { opacity: 1; animation: treeshake .9s ease-out; }
-  @keyframes treeshake {
-    0% { transform: rotate(0); } 12% { transform: rotate(-3.2deg); } 28% { transform: rotate(2.8deg); }
-    44% { transform: rotate(-2deg); } 60% { transform: rotate(1.3deg); } 76% { transform: rotate(-.6deg); } 100% { transform: rotate(0); }
-  }
-  .arm { position: absolute; pointer-events: none; z-index: 2; overflow: visible; }
-  .arm svg { display: block; width: 100%; height: 100%; overflow: visible; }
-  .arm.go { animation: wave 1.6s ease-in-out; }
-  @keyframes wave {
-    0%, 100% { transform: rotate(0); } 15% { transform: rotate(-28deg); } 32% { transform: rotate(6deg); }
-    50% { transform: rotate(-28deg); } 68% { transform: rotate(6deg); } 85% { transform: rotate(-14deg); }
-  }
   .hint { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 28px);
     transform: translateX(-50%) translateY(20px); opacity: 0; transition: all .4s ease;
     background: #f2e3cb; color: #3a2414; font-family: 'EB Garamond', Georgia, serif; font-size: 18px;
@@ -340,7 +326,7 @@ const LAYOUTS = {
     img: 'haus-voll.jpg', W: 1199, H: 2702, OFF: 790,
     win: [11, 9.5 * 1312 / 2702], win24: [16, 13 * 1312 / 2702],
     glow: [16, 13 * 1312 / 2702], glow24: [22, 17 * 1312 / 2702],
-    snowman: [1098, 1080, 165, 250], mouth: [1075, 1040], tree: [92, 1010, 185, 390], treeTop: [95, 900], lamps: [[445, 1095, 70, 110], [754, 1083, 70, 110]], arm: { p: [1147, 1096], s: 1.3, hole: [1144, 1044, 59, 64] }, treeSpr: [0, 805, 201, 310], chimney: [875, 150, 170, 210], smoke: [878, 45], heart: { c: [598, 206], s: [108, 100], hs: [116, 108], img: 'handy' }, fences: [{"slats": [[107.5, 1167.5, 23], [157.5, 1167.5, 29], [200.5, 1167.5, 29], [243.5, 1167.5, 31]], "patch": [177.5, 1167.5, 171]}, {"slats": [[923.5, 1168.0, 31], [966.5, 1168.0, 31], [1003.5, 1168.0, 31]], "patch": [963.5, 1168.0, 119]}], drift: [[5, 35], [1.3, 2.1]],
+    snowman: [1098, 1080, 165, 250], mouth: [1075, 1040], tree: [92, 1010, 185, 390], treeTop: [95, 900], lamps: [[445, 1095, 70, 110], [754, 1083, 70, 110]], chimney: [875, 150, 170, 210], smoke: [878, 45], heart: { c: [598, 206], s: [108, 100], hs: [116, 108], img: 'handy' }, fences: [{"slats": [[107.5, 1167.5, 23], [157.5, 1167.5, 29], [200.5, 1167.5, 29], [243.5, 1167.5, 31]], "patch": [177.5, 1167.5, 171]}, {"slats": [[923.5, 1168.0, 31], [966.5, 1168.0, 31], [1003.5, 1168.0, 31]], "patch": [963.5, 1168.0, 119]}], drift: [[5, 35], [1.3, 2.1]],
     windows: {
       1:[365,370], 2:[518,370], 3:[683,370], 4:[835,370],
       5:[288,515], 6:[447,515], 7:[602,515], 8:[762,515], 9:[916,515],
@@ -358,7 +344,7 @@ const LAYOUTS = {
   pc: {
     img: 'haus-pc.jpg', W: 1672, H: 941, OFF: 0,
     win: [6.3, 10.1], win24: [9, 20], glow: [9, 15], glow24: [13, 25],
-    snowman: [1232, 765, 150, 225], mouth: [1212, 720], tree: [410, 715, 180, 300], treeTop: [440, 600], lamps: [[717, 779, 70, 95], [958, 774, 70, 95]], arm: { p: [1270, 772], s: 1, hole: [1269, 728, 52, 56] }, treeSpr: [318, 556, 183, 243], chimney: [1045, 135, 135, 195], smoke: [1045, 55], heart: { c: [834.5, 149], s: [81, 76], hs: [89, 84], img: 'pc' }, fences: [{"slats": [[447.5, 835.5, 29], [487.5, 835.5, 29], [522.5, 835.5, 29], [560.5, 835.5, 29]], "patch": [504.0, 835.5, 150]}, {"slats": [[1075.5, 832.5, 29], [1113.5, 832.5, 31], [1151.5, 832.5, 31]], "patch": [1114.0, 832.5, 114]}], drift: [[90, 170], [0.2, 0.45]],
+    snowman: [1232, 765, 150, 225], mouth: [1212, 720], tree: [410, 715, 180, 300], treeTop: [440, 600], lamps: [[717, 779, 70, 95], [958, 774, 70, 95]], chimney: [1045, 135, 135, 195], smoke: [1045, 55], heart: { c: [834.5, 149], s: [81, 76], hs: [89, 84], img: 'pc' }, fences: [{"slats": [[447.5, 835.5, 29], [487.5, 835.5, 29], [522.5, 835.5, 29], [560.5, 835.5, 29]], "patch": [504.0, 835.5, 150]}, {"slats": [[1075.5, 832.5, 29], [1113.5, 832.5, 31], [1151.5, 832.5, 31]], "patch": [1114.0, 832.5, 114]}], drift: [[90, 170], [0.2, 0.45]],
     windows: {
       1:[665,268], 2:[778,268], 3:[893,268], 4:[1005,268],
       5:[610,372], 6:[722,372], 7:[836,372], 8:[950,372], 9:[1063,372],
@@ -446,7 +432,7 @@ findImage().then(src => {
     });
 
     // Schneemann und Tanne zum Antippen: sie sagen etwas
-    function talker(label, box, anchor, html, side, onTap) {
+    function talker(label, box, anchor, html, side) {
       const [cx, cy, w, h] = box, [l, t] = px(cx, cy);
       const btn = document.createElement('button');
       btn.className = 'snowman'; btn.setAttribute('aria-label', label);
@@ -462,45 +448,12 @@ findImage().then(src => {
         document.querySelectorAll('.bubble.show').forEach(o => o !== bubble && o.classList.remove('show'));
         bubble.classList.remove('show'); void bubble.offsetWidth; bubble.classList.add('show');
         clearTimeout(timer); timer = setTimeout(() => bubble.classList.remove('show'), 4200);
-        if (onTap) onTap();
       };
     }
-    const IMGSET = PC ? 'pc' : 'handy';
-    // winkender Arm des Schneemanns (der gemalte Arm wird überdeckt)
-    const A = L.arm;
-    const ah = document.createElement('img'); ah.className = 'arm-hole'; ah.alt = ''; ah.src = IMGSET + '-arm-loch.png';
-    ah.style.left = (A.hole[0] / L.W * 100) + '%'; ah.style.top = ((A.hole[1] + L.OFF) / L.H * 100) + '%';
-    ah.style.width = (A.hole[2] / L.W * 100) + '%';
-    wrap.appendChild(ah);
-    const arm = document.createElement('div'); arm.className = 'arm';
-    const VB = [-4, -36, 46, 40];   // Zweig, Schulter bei (0,0)
-    arm.style.left = ((A.p[0] + VB[0] * A.s) / L.W * 100) + '%';
-    arm.style.top = ((A.p[1] + VB[1] * A.s + L.OFF) / L.H * 100) + '%';
-    arm.style.width = (VB[2] * A.s / L.W * 100) + '%';
-    arm.style.height = (VB[3] * A.s / L.H * 100) + '%';
-    arm.style.transformOrigin = (-VB[0] / VB[2] * 100) + '% ' + (-VB[1] / VB[3] * 100) + '%';
-    const twig = 'M0 0 L20 -14 L37 -25 M20 -14 L22 -28 M31 -21 L35 -31';
-    arm.innerHTML = '<svg viewBox="' + VB.join(' ') + '" fill="none" stroke-linecap="round" stroke-linejoin="round">' +
-      '<path d="' + twig + '" stroke="#7a4219" stroke-width="4.2"/>' +
-      '<path d="' + twig + '" stroke="#a8652e" stroke-width="2.4"/>' +
-      '<path d="M2 -2.5 L20 -15.5 L36 -26.5" stroke="#f1dcc0" stroke-width=".9" opacity=".8"/></svg>';
-    wrap.appendChild(arm);
-    const wave = () => { arm.classList.remove('go'); void arm.offsetWidth; arm.classList.add('go'); };
-
-    // wackelnde Tanne
-    const T = L.treeSpr;
-    const tree = document.createElement('img'); tree.className = 'tree-spr'; tree.alt = ''; tree.src = IMGSET + '-tanne.png';
-    tree.style.left = (T[0] / L.W * 100) + '%'; tree.style.top = ((T[1] + L.OFF) / L.H * 100) + '%';
-    tree.style.width = (T[2] / L.W * 100) + '%';
-    wrap.appendChild(tree);
-    let shakeT;
-    const shake = () => { tree.classList.remove('go'); void tree.offsetWidth; tree.classList.add('go');
-      clearTimeout(shakeT); shakeT = setTimeout(() => tree.classList.remove('go'), 950); };
-
     talker('Schneemann', L.snowman, [L.mouth[0] - 18, L.mouth[1] - 30],
-      'Ich spür’ meine Beine nicht.<br>Ich kann meine Beine nicht spüren!!', 'left', wave);
+      'Ich spür’ meine Beine nicht.<br>Ich kann meine Beine nicht spüren!!', 'left');
     talker('Tanne', L.tree, L.treeTop,
-      'Und wer ist der funky aussehende<br>Esel da drüben?', 'right', shake);
+      'Und wer ist der funky aussehende<br>Esel da drüben?', 'right');
 
     // Laternen leuchten beim Antippen kurz heller
     L.lamps.forEach(([cx, cy, w, h], i) => {
