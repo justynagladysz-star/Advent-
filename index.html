@@ -186,6 +186,11 @@
   @keyframes twinkle-pop { 0% { transform: translate(-50%,-50%) scale(0) rotate(0); opacity: 0; }
     30% { transform: translate(-50%,-50%) scale(1.1) rotate(25deg); opacity: 1; }
     100% { transform: translate(-50%,-50%) scale(.2) rotate(70deg); opacity: 0; } }
+  /* Türchen-Nummern in derselben Schrift wie auf den Karten */
+  .wnum { position: absolute; transform: translate(-50%, -50%); pointer-events: none; z-index: 1;
+    font-family: 'Zuckerguss', cursive; font-weight: 700; line-height: 1; white-space: nowrap;
+    color: #e9e0d5; font-variant-numeric: lining-nums;
+    text-shadow: 0 -.012em 0 #f2ece5, 0 .035em 0 #d4c1ad, 0 .065em .035em rgba(70,35,10,.5); }
   .hint { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 28px);
     transform: translateX(-50%) translateY(20px); opacity: 0; transition: all .4s ease;
     background: #f2e3cb; color: #3a2414; font-family: 'EB Garamond', Georgia, serif; font-size: 18px;
@@ -349,7 +354,7 @@ const PC = innerWidth / innerHeight > 1.05;
 if (PC) document.body.classList.add('pc');
 const LAYOUTS = {
   handy: {
-    img: 'haus-voll.jpg', W: 1199, H: 2702, OFF: 790,
+    img: 'haus-voll.jpg', nums: {"pos": {"1": [364.5, 364.5], "2": [519.0, 365.0], "3": [684.5, 366.5], "4": [834.5, 367.0], "5": [287.0, 514.5], "6": [448.0, 514.0], "7": [603.5, 514.5], "8": [762.0, 514.5], "9": [915.0, 515.0], "10": [282.0, 662.0], "11": [443.5, 660.0], "12": [604.0, 660.0], "13": [762.5, 660.0], "14": [921.0, 660.0], "15": [279.0, 808.0], "16": [445.0, 807.5], "17": [609.0, 808.0], "18": [765.0, 807.5], "19": [928.5, 808.0], "20": [275.0, 957.0], "21": [430.0, 955.5], "22": [786.5, 955.5], "23": [944.0, 955.0], "24": [610.0, 1055.0]}, "h": 43, "h24": 48}, W: 1199, H: 2702, OFF: 790,
     win: [11, 9.5 * 1312 / 2702], win24: [16, 13 * 1312 / 2702],
     glow: [16, 13 * 1312 / 2702], glow24: [22, 17 * 1312 / 2702],
     anim: {"tree": [0, 809, 203, 431], "treeHole": [0, 806, 206, 437], "treePivot": [60.400000000000006, 1226.6], "armL": [1015, 1052, 47, 54], "armR": [1131, 1057, 60, 55], "armHole": [1013, 1051, 180, 63], "pivL": [1054.3, 1096.12], "pivR": [1139.8, 1104.1], "face": [1066, 1027, 50, 52]},
@@ -369,7 +374,7 @@ const LAYOUTS = {
     ]
   },
   pc: {
-    img: 'haus-pc.jpg', W: 1672, H: 941, OFF: 0,
+    img: 'haus-pc.jpg', nums: {"pos": {"1": [665.0, 266.5], "2": [777.0, 266.5], "3": [895.0, 267.0], "4": [1004.5, 267.0], "5": [609.0, 371.0], "6": [725.0, 371.0], "7": [837.5, 371.5], "8": [951.5, 371.0], "9": [1063.0, 371.0], "10": [606.0, 474.0], "11": [722.5, 473.0], "12": [838.0, 473.0], "13": [952.0, 474.0], "14": [1067.0, 473.0], "15": [603.5, 576.0], "16": [722.5, 576.0], "17": [840.0, 576.5], "18": [953.5, 576.0], "19": [1071.0, 576.5], "20": [601.0, 678.0], "21": [713.0, 678.0], "22": [966.0, 678.0], "23": [1079.5, 678.0], "24": [839.5, 752.5]}, "h": 30, "h24": 35}, W: 1672, H: 941, OFF: 0,
     win: [6.3, 10.1], win24: [9, 20], glow: [9, 15], glow24: [13, 25],
     anim: {"tree": [293, 550, 222, 334], "treeHole": [290, 547, 228, 340], "treePivot": [403.9, 871.6], "armL": [1154, 732, 45, 50], "armR": [1261, 736, 57, 52], "armHole": [1152, 730, 168, 59], "pivL": [1190.75, 772.4], "pivR": [1269.5, 779.75], "face": [1202, 708, 45, 49]},
     snowman: [1232, 765, 150, 225], mouth: [1212, 720], tree: [410, 715, 180, 300], treeTop: [440, 600], lamps: [[717, 779, 70, 95], [958, 774, 70, 95]], chimney: [1045, 135, 135, 195], smoke: [1045, 55], heart: { c: [834.5, 149], s: [81, 76], hs: [89, 84], img: 'pc' }, fences: [{"slats": [[447.5, 835.5, 29], [487.5, 835.5, 29], [522.5, 835.5, 29], [560.5, 835.5, 29]], "patch": [504.0, 835.5, 150]}, {"slats": [[1075.5, 832.5, 29], [1113.5, 832.5, 31], [1151.5, 832.5, 31]], "patch": [1114.0, 832.5, 114]}], drift: [[90, 170], [0.2, 0.45]],
@@ -410,7 +415,7 @@ function addStar(parent, leftPct, topPct, sizePx) {
 ['karte-lebkuchen.webp','schnee.jpg', (PC ? 'pc' : 'handy') + '-herz.png', (PC ? 'pc' : 'handy') + '-herz-loch.png'].forEach(u => { const i = new Image(); i.src = u; });
 
 const REPO = 'justynagladysz-star/Advent-';
-const V = '?v=28';   // neue Nummer = Browser lädt die Bilder frisch
+const V = '?v=29';   // neue Nummer = Browser lädt die Bilder frisch
 async function findImage() {
   return L.img + V;
 }
@@ -445,6 +450,15 @@ findImage().then(src => {
       if (y > 9 && y < 22) y = Math.random() < .5 ? 3 + Math.random() * 6 : 22 + Math.random() * 6;
       addStar(wrap, 4 + Math.random() * 92, y, 6 + Math.random() * 12);
     }
+
+    // Nummern auf die Fenster schreiben
+    Object.entries(L.nums.pos).forEach(([d, [x, y]]) => {
+      const n = document.createElement('div'); n.className = 'wnum'; n.textContent = d;
+      const [l, t] = px(x, y);
+      n.style.left = l + '%'; n.style.top = t + '%';
+      n.style.fontSize = ((+d === 24 ? L.nums.h24 : L.nums.h) / 0.68 / L.W * 100) + 'cqw';
+      wrap.appendChild(n);
+    });
 
     // Fenster zum Antippen
     Object.keys(windows).forEach(k => {
