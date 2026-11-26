@@ -410,8 +410,9 @@ function addStar(parent, leftPct, topPct, sizePx) {
 ['karte-lebkuchen.webp','schnee.jpg', (PC ? 'pc' : 'handy') + '-herz.png', (PC ? 'pc' : 'handy') + '-herz-loch.png'].forEach(u => { const i = new Image(); i.src = u; });
 
 const REPO = 'justynagladysz-star/Advent-';
+const V = '?v=26';   // neue Nummer = Browser lädt die Bilder frisch
 async function findImage() {
-  return L.img;
+  return L.img + V;
 }
 
 const day = parseInt(new URLSearchParams(location.search).get('tag'), 10);
@@ -482,7 +483,7 @@ findImage().then(src => {
     // Teile aus dem Bild selbst: nur sichtbar, solange sie sich bewegen
     const IM = PC ? 'pc' : 'handy', AN = L.anim;
     const cut = (src, cls, b, pivot) => {
-      const e = document.createElement('img'); e.src = src; e.alt = ''; e.className = 'cut ' + cls;
+      const e = document.createElement('img'); e.src = src + V; e.alt = ''; e.className = 'cut ' + cls;
       e.style.left = (b[0] / L.W * 100) + '%'; e.style.top = ((b[1] + L.OFF) / L.H * 100) + '%';
       e.style.width = (b[2] / L.W * 100) + '%'; e.style.height = (b[3] / L.H * 100) + '%';
       if (pivot) e.style.transformOrigin = ((pivot[0] - b[0]) / b[2] * 100) + '% ' + ((pivot[1] - b[1]) / b[3] * 100) + '%';
